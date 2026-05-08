@@ -58,7 +58,7 @@ jobs:
         files: ./python/coverage.xml
         flags: python
         name: python-${{ matrix.python-version }}-coverage
-        fail_ci_if_error: true
+        fail_ci_if_error: false
     
     - name: Upload Python coverage report as artifact
       uses: actions/upload-artifact@v4
