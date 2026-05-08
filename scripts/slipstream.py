@@ -218,7 +218,7 @@ class NonInteractiveMonitor:
     """Simple line-by-line frame monitor for terminal output."""
     
     def __init__(self, connection, check_crc=True, show_hex=False, show_ascii=False,
-                 logger=None):
+                 logger=None, follow=False):
         """
         Initialize non-interactive monitor.
         
@@ -228,11 +228,13 @@ class NonInteractiveMonitor:
             show_hex: Whether to display frame in hex
             show_ascii: Whether to display ASCII representation
             logger: FrameLogger instance for logging
+            follow: Whether to follow the connection (print monitoring messages)
         """
         self.connection = connection
         self.show_hex = show_hex
         self.show_ascii = show_ascii
         self.logger = logger
+        self.follow = follow
         self.monitor = FrameMonitor(connection, check_crc=check_crc)
         self.monitor.frame_callback = self._print_frame
         self.frame_count = 0
@@ -285,28 +287,31 @@ class NonInteractiveMonitor:
     def run(self, duration=None):
         """
         Run the monitor.
-        
+
         Args:
             duration: Duration in seconds (None for infinite)
         """
         try:
-            # Display connection info based on connection type
-            if hasattr(self.connection, 'host'):
-                print(f"Monitoring {self.connection.host}:{self.connection.port}")
-            elif hasattr(self.connection, 'port') and hasattr(self.connection, 'baudrate'):
-                print(f"Monitoring {self.connection.port} @ {self.connection.baudrate} baud")
-            elif hasattr(self.connection, 'filepath'):
-                print(f"Monitoring file: {self.connection.filepath}")
-            else:
-                print(f"Monitoring connection")
-            
-            if self.logger and self.logger.log_file:
-                print(f"Logging to {self.logger.log_file} ({self.logger.log_format} format)")
-            print("Press Ctrl+C to stop...\n")
-            
+            # Only print monitoring messages if following (waiting for data)
+            if self.follow:
+                # Display connection info based on connection type
+                if hasattr(self.connection, 'host'):
+                    print(f"Monitoring {self.connection.host}:{self.connection.port}")
+                elif hasattr(self.connection, 'port') and hasattr(self.connection, 'baudrate'):
+                    print(f"Monitoring {self.connection.port} @ {self.connection.baudrate} baud")
+                elif hasattr(self.connection, 'filepath'):
+                    print(f"Monitoring file: {self.connection.filepath}")
+                else:
+                    print(f"Monitoring connection")
+
+                if self.logger and self.logger.log_file:
+                    print(f"Logging to {self.logger.log_file} ({self.logger.log_format} format)")
+                print("Press Ctrl+C to stop...\n")
+
             self.monitor.monitor(duration=duration)
         except KeyboardInterrupt:
-            print("\n\nStopped by user.")
+            if self.follow:
+                print("\n\nStopped by user.")
         finally:
             if self.logger:
                 self.logger.close()
@@ -834,11 +839,16 @@ def main():
     
     # For file connections, exit immediately unless --follow is given
     from slipstream.connections import FileConnection
-    if isinstance(connection, FileConnection) and not args.follow:
+    is_file = isinstance(connection, FileConnection)
+    if is_file and not args.follow:
         # If no explicit timeout was given, set to 0 to exit immediately after reading
         if args.timeout is None:
             args.timeout = 0
-    
+
+    # Determine if we should show monitoring messages (follow mode)
+    # Follow mode for: non-file connections, file connections with --follow, or explicit timeout
+    follow_mode = (not is_file) or args.follow or (args.timeout is not None and args.timeout > 0)
+
     try:
         # Select monitor type
         if hasattr(args, 'interactive') and args.interactive:
@@ -850,7 +860,8 @@ def main():
                 check_crc=not args.no_crc,
                 show_hex=args.hex,
                 show_ascii=args.ascii,
-                logger=logger
+                logger=logger,
+                follow=follow_mode
             )
             monitor.run(duration=args.timeout)
         
