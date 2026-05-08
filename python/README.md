@@ -1,41 +1,30 @@
-# PySLIPStream
+# slipstream - Python SLIP Library
 
-Python SLIP implementation for framing & embedded I/O - the official Python binding for libSLIPStream.
-
-## Overview
-
-PySLIPStream is a comprehensive Python library for SLIP (Serial Line Internet Protocol) frame encoding, decoding, and monitoring with CRC32 validation and real-time statistics. It provides full parity with the C++ libSLIPStream library, ensuring identical behavior for SLIP encoding/decoding and CRC32 calculations.
+A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame encoding, decoding, and monitoring with CRC32 validation and real-time statistics.
 
 ## Features
 
-- ✅ **SLIP Encoding/Decoding** - Full RFC 1055 compliance with libSLIPStream parity
-- ✅ **CRC32 Validation** - Ethernet polynomial matching libSLIPStream exactly
+- ✅ **SLIP Encoding/Decoding** - Full RFC 1055 compliance
 - ✅ **Streaming Decoder** - Process continuous byte streams from serial or network
+- ✅ **CRC32 Validation** - Ethernet polynomial with built-in verification
 - ✅ **Serial & TCP Support** - Unified connection interface
 - ✅ **Statistics Tracking** - Comprehensive frame and throughput metrics
 - ✅ **Interactive ncurses UI** - Real-time dashboard for monitoring
-- ✅ **Parity Testing** - Automated tests ensure compatibility with libSLIPStream
+- ✅ **Hex Utilities** - Display and analyze frame bytes
 - ✅ **Production Ready** - Thoroughly documented and tested
 
 ## Installation
 
-### From PyPI (recommended)
-
-```bash
-pip install pyslipstream
-```
-
 ### From Git
 
 ```bash
-pip install git+https://github.com/ulikoehler/PySLIPStream.git
+pip install git+https://github.com/ulikoehler/libSLIPStream.git#subdirectory=python
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/ulikoehler/PySLIPStream.git
-cd PySLIPStream/python
+cd python
 pip install -e .
 ```
 
@@ -100,7 +89,7 @@ monitor.close()
 
 ```bash
 # Launch ncurses dashboard
-python -m slipstream.scripts.monitor_slip -i /dev/ttyUSB0:115200
+./scripts/monitor_slip.py -i /dev/ttyUSB0:115200
 ```
 
 Dashboard shows:
@@ -114,6 +103,7 @@ Dashboard shows:
 
 ```python
 from slipstream import calculate_crc32, append_crc32, extract_crc32, verify_crc32
+import struct
 
 # Create a frame with CRC32
 payload = b"sensor_data=42"
@@ -136,16 +126,16 @@ The main monitoring tool with multiple modes:
 
 ```bash
 # Basic usage - monitor serial port
-python -m slipstream.scripts.monitor_slip /dev/ttyUSB0
+./scripts/monitor_slip.py /dev/ttyUSB0
 
 # Interactive ncurses mode
-python -m slipstream.scripts.monitor_slip -i /dev/ttyUSB0
+./scripts/monitor_slip.py -i /dev/ttyUSB0
 
 # Monitor TCP connection
-python -m slipstream.scripts.monitor_slip tcp:192.168.1.100:5000
+./scripts/monitor_slip.py tcp:192.168.1.100:5000
 
 # With options
-python -m slipstream.scripts.monitor_slip \
+./scripts/monitor_slip.py \
     -i \                          # Interactive mode
     -t 60 \                       # 60 second timeout
     -x \                          # Hex dump of frames
@@ -158,27 +148,6 @@ python -m slipstream.scripts.monitor_slip \
 - `-x, --hex` - Display hex dump of each frame
 - `-a, --ascii` - Show ASCII representation
 - `--no-crc` - Disable CRC32 validation
-
-## libSLIPStream Parity
-
-PySLIPStream is the official Python binding for libSLIPStream and maintains full parity with the C++ implementation:
-
-- **SLIP Encoding/Decoding**: Identical behavior to libSLIPStream's Buffer API
-- **CRC32 Calculation**: Uses the same Ethernet polynomial (0x04C11DB7) with initial value 0xFFFFFFFF
-- **Byte Order**: Little-endian storage for CRC32, matching libSLIPStream
-- **Escape Sequences**: Same SLIP escaping rules (0xC0 → 0xDB 0xDC, 0xDB → 0xDB 0xDD)
-
-### Parity Verification
-
-The repository includes automated parity tests that verify:
-- SLIP encoding/decoding produces identical results
-- CRC32 calculations match libSLIPStream exactly
-- All byte values are handled correctly
-
-Run parity tests:
-```bash
-pytest tests/test_parity.py -v
-```
 
 ## Architecture
 
@@ -351,7 +320,7 @@ print(f"Total valid frames: {len(frames_received)}")
 Interactive ncurses mode for live monitoring:
 
 ```bash
-python -m slipstream.scripts.monitor_slip -i -t 300 /dev/ttyUSB0:115200
+./scripts/monitor_slip.py -i -t 300 /dev/ttyUSB0:115200
 ```
 
 Shows live statistics including:
@@ -424,16 +393,13 @@ pip install pytest
 pytest tests/
 ```
 
-## Documentation
+## Frame Format Reference
 
-- **Quick Start Guide** - See [PYTHON_QUICKSTART.md](PYTHON_QUICKSTART.md)
-- **Full Python Documentation** - See [python/README.md](python/README.md)
-- **SLIP Frame Format** - See [libSLIPStream FramingConvention.md](https://github.com/ulikoehler/libSLIPStream/blob/master/FramingConvention.md)
-- **libSLIPStream C++ Library** - https://github.com/ulikoehler/libSLIPStream
+For detailed information about SLIP frame structure, including escape sequences and CRC32 encoding, see the parent repository's [FramingConvention.md](../FramingConvention.md).
 
 ## License
 
-See [LICENSE](LICENSE) for license information.
+Part of libSLIPStream. See LICENSE in the parent repository.
 
 ## Contributing
 
@@ -441,8 +407,7 @@ Contributions welcome! Please ensure:
 1. Code follows PEP 8 style guide
 2. All docstrings are complete
 3. Tests pass (`pytest`)
-4. Parity tests with libSLIPStream pass
-5. New features include documentation
+4. New features include documentation
 
 ## Author
 
@@ -450,7 +415,7 @@ Uli Köhler <github@techoverflow.net>
 
 ## See Also
 
-- [libSLIPStream C++ Library](https://github.com/ulikoehler/libSLIPStream)
-- [SLIP Frame Format Reference](https://github.com/ulikoehler/libSLIPStream/blob/master/FramingConvention.md)
+- [libSLIPStream C++ Library](../README.md)
+- [SLIP Frame Format Reference](../FramingConvention.md)
 - [RFC 1055 - SLIP Protocol](https://tools.ietf.org/html/rfc1055)
 - [pyserial Documentation](https://pyserial.readthedocs.io/)

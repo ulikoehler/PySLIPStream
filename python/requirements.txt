@@ -1,0 +1,7 @@
+# Development dependencies for slipstream
+# Install with: pip install -e ".[dev]"
+# For serial port support: pip install -e ".[serial]"
+
+# For development/testing
+pytest>=6.0
+pytest-cov>=2.10
