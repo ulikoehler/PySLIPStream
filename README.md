@@ -1,6 +1,10 @@
 # slipstream - Python SLIP Library
 
+![slipstream logo](docs/SLIPstream-logo.png)
+
 A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame encoding, decoding, and monitoring with CRC32 validation and real-time statistics.
+
+**Note:** This library is fully compatible with [libSLIPStream](https://github.com/ulikoehler/libSLIPStream) (C++) and [SLIPSpeed](https://github.com/ulikoehler/slipspeed) (Rust) implementations.
 
 ## Features
 
