@@ -11,6 +11,7 @@ A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame en
 - ✅ **Statistics Tracking** - Comprehensive frame and throughput metrics
 - ✅ **Interactive ncurses UI** - Real-time dashboard for monitoring
 - ✅ **Hex Utilities** - Display and analyze frame bytes
+- ✅ **Async API (Optional)** - asyncio-based async/await support for concurrent operations
 - ✅ **Production Ready** - Thoroughly documented and tested
 
 ## Installation
@@ -34,11 +35,30 @@ pip install -e .
 # For serial port support
 pip install -e ".[serial]"
 
+# For async/await support (asyncio)
+pip install -e ".[async]"
+
 # For development/testing
 pip install -e ".[dev]"
 ```
 
 Core functionality requires only Python 3.6+. The curses module for interactive mode is included in the standard library on Linux/macOS.
+
+### Async API (Optional)
+
+The library includes optional async/await support for asyncio-based applications. Install with:
+
+```bash
+pip install -e ".[async]"
+```
+
+The async API provides:
+- **Async encoding/decoding** - `encode_packet_async()`, `decode_packet_async()`
+- **Async streaming decoder** - `AsyncStreamingDecoder`, `AsyncSlipCodec`
+- **Async connections** - TCP, TCP server, file, and serial (with pyserial-asyncio)
+- **Async frame monitor** - `AsyncFrameMonitor` with async iteration
+
+See the "Async API" section below for usage examples.
 
 ## Quick Start
 
@@ -139,6 +159,122 @@ stored_payload, stored_crc = extract_crc32(frame)
 is_valid = verify_crc32(stored_payload, stored_crc)
 print(f"CRC Valid: {is_valid}")
 ```
+
+### 5. Async API (Optional)
+
+The async API provides asyncio-based alternatives to the synchronous API. Install with `pip install -e ".[async]"`.
+
+#### Async Encoding/Decoding
+
+```python
+import asyncio
+from slipstream.async_slip import encode_packet_async, decode_packet_async
+
+async def main():
+    # Encode a message
+    message = b"Hello, Async!"
+    encoded = await encode_packet_async(message)
+    print(f"Encoded: {encoded.hex()}")
+
+    # Decode it back
+    decoded, consumed = await decode_packet_async(encoded)
+    print(f"Decoded: {decoded}")
+    assert decoded == message
+
+asyncio.run(main())
+```
+
+#### Async TCP Connection
+
+```python
+import asyncio
+from slipstream.async_connections import create_async_connection
+from slipstream.async_streaming import AsyncFrameMonitor
+
+async def monitor_tcp():
+    # Connect to TCP server
+    connection = await create_async_connection('tcp://localhost:5000')
+    
+    # Create async frame monitor
+    monitor = AsyncFrameMonitor(connection, check_crc=True)
+    
+    # Monitor for 10 seconds
+    await monitor.monitor(duration=10)
+    
+    # Print statistics
+    monitor.print_stats()
+    
+    # Close connection
+    await monitor.close()
+
+asyncio.run(monitor_tcp())
+```
+
+#### Async Frame Iterator
+
+```python
+import asyncio
+from slipstream.async_connections import create_async_connection
+from slipstream.async_streaming import AsyncFrameMonitor
+
+async def monitor_iter():
+    connection = await create_async_connection('tcp://localhost:5000')
+    monitor = AsyncFrameMonitor(connection, check_crc=True)
+    
+    # Iterate over frames as they arrive
+    async for frame_info in monitor.monitor_iter():
+        print(f"Frame: {frame_info['payload'].hex()}")
+        print(f"CRC Valid: {frame_info['crc_valid']}")
+    
+    await monitor.close()
+
+asyncio.run(monitor_iter())
+```
+
+#### Async Streaming Decoder
+
+```python
+import asyncio
+from slipstream.async_slip import AsyncStreamingDecoder, encode_packet_async
+
+async def stream_decoder_example():
+    decoder = AsyncStreamingDecoder()
+    
+    # Feed data in chunks
+    chunk1 = await encode_packet_async(b"part1")
+    chunk2 = await encode_packet_async(b"part2")
+    
+    await decoder.feed_async(chunk1 + chunk2)
+    
+    # Get statistics
+    stats = decoder.get_stats()
+    print(f"Frames received: {stats['frames_received']}")
+
+asyncio.run(stream_decoder_example())
+```
+
+#### Async Codec (Rust-style)
+
+```python
+import asyncio
+from slipstream.async_slip import AsyncSlipCodec
+
+async def codec_example():
+    codec = AsyncSlipCodec()
+    
+    # Encode
+    encoded = await codec.encode(b"test data")
+    
+    # Decode from buffer
+    src = bytearray(encoded)
+    decoded = await codec.decode(src)
+    
+    print(f"Decoded: {decoded}")
+
+asyncio.run(codec_example())
+```
+
+**Note:** The async API is optional and only available when the `[async]` extras are installed. If not installed, importing async modules will raise ImportError. The synchronous API remains fully functional without async dependencies.
 
 ## Command-Line Tools
 

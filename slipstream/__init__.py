@@ -8,6 +8,7 @@ This library provides comprehensive SLIP (Serial Line Internet Protocol) support
 - Serial port and TCP connection handling
 - Frame statistics tracking
 - Hex formatting utilities
+- Optional async/await support for asyncio-based applications
 
 Basic Usage:
     from slipstream import FrameMonitor, create_connection
@@ -16,6 +17,16 @@ Basic Usage:
     monitor = FrameMonitor(connection, check_crc=True)
     monitor.monitor(duration=10)
     monitor.print_stats()
+
+Async Usage (optional):
+    from slipstream.async_streaming import AsyncFrameMonitor
+    from slipstream.async_connections import create_async_connection
+    
+    async def main():
+        connection = await create_async_connection('tcp://localhost:5000')
+        monitor = AsyncFrameMonitor(connection, check_crc=True)
+        await monitor.monitor(duration=10)
+        monitor.print_stats()
 
 References:
     - RFC 1055: Nonstandard Transmission of IP Datagrams over Serial Lines: SLIP
@@ -62,3 +73,47 @@ __all__ = [
     'FrameMonitor',
     'hexlify_frame',
 ]
+
+# Optional async exports
+try:
+    from .async_slip import (
+        encode_packet_async,
+        decode_packet_async,
+        AsyncStreamingDecoder,
+        AsyncSlipCodec,
+    )
+    from .async_connections import (
+        AsyncConnection,
+        AsyncTCPConnection,
+        AsyncTCPServerConnection,
+        AsyncFileConnection,
+        AsyncSerialConnection,
+        create_async_connection,
+    )
+    from .async_streaming import (
+        AsyncFrameMonitor,
+        create_async_monitor,
+    )
+    
+    __all__.extend([
+        # Async SLIP encoding/decoding
+        'encode_packet_async',
+        'decode_packet_async',
+        'AsyncStreamingDecoder',
+        'AsyncSlipCodec',
+        
+        # Async connections
+        'AsyncConnection',
+        'AsyncTCPConnection',
+        'AsyncTCPServerConnection',
+        'AsyncFileConnection',
+        'AsyncSerialConnection',
+        'create_async_connection',
+        
+        # Async monitoring
+        'AsyncFrameMonitor',
+        'create_async_monitor',
+    ])
+except ImportError:
+    # Async dependencies not installed, skip async exports
+    pass
