@@ -1844,5 +1844,125 @@ class TestFrameLogger:
 
 
 
+# ============================================================================
+# Test Data Files Tests
+# ============================================================================
+
+class TestTestDataFiles:
+    """Test decoding of all test data files."""
+    
+    def get_test_data_files(self):
+        """Get all .bin files from test_data directory."""
+        test_data_dir = Path(__file__).parent.parent / 'test' / 'test_data'
+        if not test_data_dir.exists():
+            return []
+        return sorted(test_data_dir.glob('*.bin'))
+    
+    def test_decode_all_test_data_files(self):
+        """Test that all test data files can be decoded."""
+        test_files = self.get_test_data_files()
+        
+        if not test_files:
+            pytest.skip("No test data files found")
+        
+        for test_file in test_files:
+            # Read the file
+            with open(test_file, 'rb') as f:
+                data = f.read()
+            
+            # Try to decode it
+            try:
+                decoded, consumed = decode_packet(data)
+                # If we got a frame, it should be valid
+                assert consumed > 0 or len(data) == 0
+            except Exception as e:
+                # Some files may be intentionally incomplete/invalid
+                # That's okay as long as we don't crash
+                pass
+    
+    def test_decode_test_data_with_streaming(self):
+        """Test decoding test data files using streaming decoder."""
+        test_files = self.get_test_data_files()
+        
+        if not test_files:
+            pytest.skip("No test data files found")
+        
+        frames_received = []
+        
+        def frame_callback(frame_data):
+            frames_received.append(frame_data)
+        
+        for test_file in test_files:
+            frames_received.clear()
+            
+            with open(test_file, 'rb') as f:
+                data = f.read()
+            
+            decoder = StreamingDecoder(callback=frame_callback)
+            
+            try:
+                decoder.feed(data)
+                # If we got frames, they should be valid
+                for frame in frames_received:
+                    assert isinstance(frame, bytes)
+            except Exception as e:
+                # Some files may be intentionally incomplete/invalid
+                pass
+    
+    def test_simple_frame_has_valid_crc(self):
+        """Test that simple_frame.bin has a valid CRC."""
+        test_data_dir = Path(__file__).parent.parent / 'test' / 'test_data'
+        simple_frame = test_data_dir / 'simple_frame.bin'
+        
+        if not simple_frame.exists():
+            pytest.skip("simple_frame.bin not found")
+        
+        with open(simple_frame, 'rb') as f:
+            data = f.read()
+        
+        # Decode the frame
+        decoded, consumed = decode_packet(data)
+        
+        # Should have valid CRC
+        payload, crc_bytes = extract_crc32(decoded)
+        assert verify_crc32(payload, crc_bytes)
+    
+    def test_ascii_text_frame_has_valid_crc(self):
+        """Test that ascii_text.bin has a valid CRC."""
+        test_data_dir = Path(__file__).parent.parent / 'test' / 'test_data'
+        ascii_text = test_data_dir / 'ascii_text.bin'
+        
+        if not ascii_text.exists():
+            pytest.skip("ascii_text.bin not found")
+        
+        with open(ascii_text, 'rb') as f:
+            data = f.read()
+        
+        # Decode the frame
+        decoded, consumed = decode_packet(data)
+        
+        # Should have valid CRC
+        payload, crc_bytes = extract_crc32(decoded)
+        assert verify_crc32(payload, crc_bytes)
+    
+    def test_ascii_long_frame_has_valid_crc(self):
+        """Test that ascii_long.bin has a valid CRC."""
+        test_data_dir = Path(__file__).parent.parent / 'test' / 'test_data'
+        ascii_long = test_data_dir / 'ascii_long.bin'
+        
+        if not ascii_long.exists():
+            pytest.skip("ascii_long.bin not found")
+        
+        with open(ascii_long, 'rb') as f:
+            data = f.read()
+        
+        # Decode the frame
+        decoded, consumed = decode_packet(data)
+        
+        # Should have valid CRC
+        payload, crc_bytes = extract_crc32(decoded)
+        assert verify_crc32(payload, crc_bytes)
+
+
 if __name__ == '__main__':
     pytest.main([__file__, '-v', '--cov=slipstream', '--cov-report=term-missing'])

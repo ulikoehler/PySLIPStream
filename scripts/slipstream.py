@@ -832,18 +832,19 @@ def main():
     # Create connection
     try:
         connection = create_connection(args.connection, timeout=0.1)
-        print(f"Connected to {args.connection}", file=sys.stderr)
+        from slipstream.connections import FileConnection
+        is_file = isinstance(connection, FileConnection)
+        if not is_file:
+            print(f"Connected to {args.connection}", file=sys.stderr)
     except Exception as e:
         print(f"Error: Failed to connect: {e}", file=sys.stderr)
         return 1
     
     # For file connections, exit immediately unless --follow is given
-    from slipstream.connections import FileConnection
-    is_file = isinstance(connection, FileConnection)
     if is_file and not args.follow:
-        # If no explicit timeout was given, set to 0 to exit immediately after reading
+        # If no explicit timeout was given, set to a small value to read the file once
         if args.timeout is None:
-            args.timeout = 0
+            args.timeout = 0.5
 
     # Determine if we should show monitoring messages (follow mode)
     # Follow mode for: non-file connections, file connections with --follow, or explicit timeout
