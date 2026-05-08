@@ -11,7 +11,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from slipstream import encode_packet, decode_packet
+from slipspeed import encode_packet, decode_packet
 
 
 def example_basic():

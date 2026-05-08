@@ -1,6 +1,6 @@
-# slipstream - Examples
+# slipspeed - Examples
 
-This directory contains practical examples demonstrating how to use the slipstream library.
+This directory contains practical examples demonstrating how to use the slipspeed library.
 
 ## Examples Overview
 
@@ -220,13 +220,13 @@ python3 05_tcp_echo_server.py --interval 0.5
 python3 05_tcp_echo_server.py --host 127.0.0.1
 ```
 
-**Testing with slipstream:**
+**Testing with slipspeed:**
 ```bash
 # In another terminal, connect with interactive mode
-slipstream -i tcp:localhost:5000
+slipspeed -i tcp:localhost:5000
 
 # Or connect with non-interactive mode
-slipstream tcp:localhost:5000
+slipspeed tcp:localhost:5000
 ```
 
 **Key concepts:**
@@ -241,7 +241,7 @@ slipstream tcp:localhost:5000
 ### Prerequisites
 
 ```bash
-# Install slipstream from the python directory
+# Install slipspeed from the python directory
 pip install -e ..
 
 # For serial port support
@@ -306,7 +306,7 @@ Waiting for client connection...
 
 2. **Connect with interactive mode** (Terminal 2):
 ```bash
-slipstream -i tcp:localhost:5000
+slipspeed -i tcp:localhost:5000
 ```
 
 3. **Test the interactive UI features:**
@@ -322,7 +322,7 @@ slipstream -i tcp:localhost:5000
 
 4. **Test with non-interactive mode** (optional):
 ```bash
-slipstream tcp:localhost:5000 -t 10
+slipspeed tcp:localhost:5000 -t 10
 ```
 This will monitor for 10 seconds and print statistics.
 
@@ -366,7 +366,7 @@ For production use, the library includes a command-line tool with ncurses UI:
 ### Pattern 1: Process Frames as They Arrive
 
 ```python
-from slipstream import StreamingDecoder, encode_packet
+from slipspeed import StreamingDecoder, encode_packet
 
 def handle_frame(data):
     print(f"Got frame: {data}")
@@ -382,7 +382,7 @@ while True:
 ### Pattern 2: Monitor Serial Port with Statistics
 
 ```python
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 conn = create_connection('/dev/ttyUSB0:115200')
 monitor = FrameMonitor(conn, check_crc=True)
@@ -399,7 +399,7 @@ monitor.print_stats()
 ### Pattern 3: Custom Frame Processing
 
 ```python
-from slipstream import create_connection, FrameMonitor, extract_crc32, verify_crc32
+from slipspeed import create_connection, FrameMonitor, extract_crc32, verify_crc32
 
 conn = create_connection('/dev/ttyUSB0')
 monitor = FrameMonitor(conn, check_crc=True)
@@ -425,7 +425,7 @@ monitor.monitor()
 ### Issue: Module not found
 
 ```
-ModuleNotFoundError: No module named 'slipstream'
+ModuleNotFoundError: No module named 'slipspeed'
 ```
 
 **Solution:** Install the package first from the python directory:

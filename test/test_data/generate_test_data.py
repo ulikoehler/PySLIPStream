@@ -9,7 +9,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from slipstream import encode_packet, append_crc32
+from slipspeed import encode_packet, append_crc32
 
 def create_frame_file(filepath: str, payload: bytes):
     """Create a SLIP frame file with valid CRC32."""

@@ -13,7 +13,7 @@ import struct
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from slipstream import (
+from slipspeed import (
     calculate_crc32, 
     verify_crc32, 
     append_crc32, 

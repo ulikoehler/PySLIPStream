@@ -58,8 +58,8 @@ from datetime import datetime
 # Add parent directory to path for slipstream import
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import slipstream
-from slipstream import create_connection, FrameMonitor, hexlify_frame, encode_packet
+import slipspeed
+from slipspeed import create_connection, FrameMonitor, hexlify_frame, encode_packet
 
 
 class FrameLogger:
@@ -832,7 +832,7 @@ def main():
     # Create connection
     try:
         connection = create_connection(args.connection, timeout=0.1)
-        from slipstream.connections import FileConnection
+        from slipspeed.connections import FileConnection
         is_file = isinstance(connection, FileConnection)
         if not is_file:
             print(f"Connected to {args.connection}", file=sys.stderr)

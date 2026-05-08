@@ -16,7 +16,7 @@ pip install pyserial  # For serial support
 
 # Or programmatically
 python3 -c "
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 conn = create_connection('/dev/ttyUSB0:115200')
 monitor = FrameMonitor(conn, check_crc=True)
@@ -48,7 +48,7 @@ monitor.print_stats()
 
 ### Basic Encoding/Decoding
 ```python
-from slipstream import encode_packet, decode_packet
+from slipspeed import encode_packet, decode_packet
 
 data = b"Hello, World!"
 encoded = encode_packet(data)
@@ -57,7 +57,7 @@ decoded, consumed = decode_packet(encoded)
 
 ### CRC32 Validation
 ```python
-from slipstream import append_crc32, extract_crc32, verify_crc32
+from slipspeed import append_crc32, extract_crc32, verify_crc32
 
 payload = b"sensor_data"
 frame = append_crc32(payload)  # Payload + 4-byte CRC
@@ -69,7 +69,7 @@ is_valid = verify_crc32(received_payload, crc_bytes)
 
 ### Streaming from Serial Port
 ```python
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 conn = create_connection('/dev/ttyUSB0:115200')
 monitor = FrameMonitor(conn, check_crc=True)
@@ -159,7 +159,7 @@ pip install -e .  # Install from python/ directory
 - **README.md** - Main library documentation
 - **python/README.md** - Comprehensive Python guide
 - **python/examples/README.md** - Examples guide
-- See inline docstrings: `python3 -c "import slipstream; help(slipstream)"`
+- See inline docstrings: `python3 -c "import slipspeed; help(slipspeed)"`
 
 ## Performance
 

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "slipstream"
+name = "slipspeed"
 version = "1.0.0"
 description = "Python library for SLIP frame monitoring and processing with CRC32 validation"
 readme = "README.md"
@@ -43,13 +43,13 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ulikoehler/libSLIPStream"
-Documentation = "https://github.com/ulikoehler/libSLIPStream/tree/master/python"
-Repository = "https://github.com/ulikoehler/libSLIPStream"
-Issues = "https://github.com/ulikoehler/libSLIPStream/issues"
+Homepage = "https://github.com/ulikoehler/PySLIPSpeed"
+Documentation = "https://github.com/ulikoehler/PySLIPSpeed"
+Repository = "https://github.com/ulikoehler/PySLIPSpeed"
+Issues = "https://github.com/ulikoehler/PySLIPSpeed/issues"
 
 [project.scripts]
-slipstream = "scripts.slipstream:main"
+slipspeed = "scripts.slipstream:main"
 
 [project.optional-dependencies]
 serial = ["pyserial>=3.5"]
@@ -57,10 +57,10 @@ async = ["aiofiles>=23.0.0", "pyserial-asyncio>=0.6"]
 dev = ["pytest>=6.0", "pytest-cov>=2.10", "pytest-asyncio>=0.21"]
 
 [tool.setuptools]
-packages = ["slipstream", "scripts"]
+packages = ["slipspeed", "scripts"]
 
 [tool.setuptools.package-dir]
-slipstream = "slipstream"
+slipspeed = "slipspeed"
 scripts = "scripts"
 
 [tool.pytest.ini_options]

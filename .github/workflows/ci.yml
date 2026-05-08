@@ -69,7 +69,7 @@ jobs:
         retention-days: 30
 
   parity-tests:
-    name: Parity Tests with libSLIPStream
+    name: Parity Tests with PySLIPSpeed
     runs-on: ubuntu-latest
     
     steps:
@@ -90,11 +90,11 @@ jobs:
         cd python
         pip install -e .
     
-    - name: Clone libSLIPStream
+    - name: Clone PySLIPSpeed
       run: |
-        git clone https://github.com/ulikoehler/libSLIPStream.git /tmp/libSLIPStream
+        git clone https://github.com/ulikoehler/PySLIPSpeed.git /tmp/PySLIPSpeed
     
-    - name: Install libSLIPStream dependencies
+    - name: Install PySLIPSpeed dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake libgtest-dev
@@ -111,16 +111,16 @@ jobs:
           sudo cp lib/*.a /usr/lib/ || true
         fi
     
-    - name: Build libSLIPStream tests
+    - name: Build PySLIPSpeed tests
       run: |
-        cd /tmp/libSLIPStream/test
+        cd /tmp/PySLIPSpeed/test
         mkdir -p build && cd build
         cmake -DENABLE_COVERAGE=ON ..
         cmake --build .
     
-    - name: Run libSLIPStream tests
+    - name: Run PySLIPSpeed tests
       run: |
-        cd /tmp/libSLIPStream/test/build
+        cd /tmp/PySLIPSpeed/test/build
         ./test_all --gtest_filter="*CRC32*:*SLIP*"
     
     - name: Create parity test script
@@ -129,7 +129,7 @@ jobs:
         import sys
         sys.path.insert(0, '/home/runner/work/PySLIPStream/PySLIPStream/python')
         
-        from slipstream import encode_packet, decode_packet, calculate_crc32
+        from slipspeed import encode_packet, decode_packet, calculate_crc32
         
         # Test data for parity checking
         test_cases = [
@@ -229,7 +229,7 @@ jobs:
       run: |
         echo "Build Pipeline Summary:"
         echo "✓ Python tests (multiple versions)"
-        echo "✓ Parity tests with libSLIPStream"
+        echo "✓ Parity tests with PySLIPSpeed"
         echo "✓ Code quality checks"
         echo ""
         echo "All tests completed."

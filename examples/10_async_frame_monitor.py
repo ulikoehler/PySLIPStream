@@ -13,10 +13,10 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from slipstream.async_slip import encode_packet_async
-from slipstream.async_streaming import AsyncFrameMonitor
-from slipstream.async_connections import AsyncConnection
-from slipstream.crc import append_crc32
+from slipspeed.async_slip import encode_packet_async
+from slipspeed.async_streaming import AsyncFrameMonitor
+from slipspeed.async_connections import AsyncConnection
+from slipspeed.crc import append_crc32
 
 
 class MockAsyncConnection(AsyncConnection):

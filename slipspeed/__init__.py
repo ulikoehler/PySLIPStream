@@ -11,16 +11,14 @@ This library provides comprehensive SLIP (Serial Line Internet Protocol) support
 - Optional async/await support for asyncio-based applications
 
 Basic Usage:
-    from slipstream import FrameMonitor, create_connection
-    
-    connection = create_connection('/dev/ttyUSB0:115200')
-    monitor = FrameMonitor(connection, check_crc=True)
+    from slipspeed import FrameMonitor, create_connection
+    monitor = FrameMonitor(create_connection('/dev/ttyUSB0:115200'))
     monitor.monitor(duration=10)
     monitor.print_stats()
 
 Async Usage (optional):
-    from slipstream.async_streaming import AsyncFrameMonitor
-    from slipstream.async_connections import create_async_connection
+    from slipspeed.async_streaming import AsyncFrameMonitor
+    from slipspeed.async_connections import create_async_connection
     
     async def main():
         connection = await create_async_connection('tcp://localhost:5000')
@@ -33,11 +31,11 @@ References:
     - Ethernet polynomial CRC32: 0x04C11DB7
 """
 
-from .slip import encode_packet, decode_packet, StreamingDecoder, END, ESC, ESCEND, ESCESC
-from .crc import calculate_crc32, verify_crc32, append_crc32, extract_crc32, crc32_to_hex, hex_to_crc32
-from .stats import FrameStatistics
-from .connections import Connection, SerialConnection, TCPConnection, create_connection
-from .streaming import FrameMonitor, hexlify_frame
+from slipspeed.slip import encode_packet, decode_packet, StreamingDecoder, END, ESC, ESCEND, ESCESC
+from slipspeed.crc import calculate_crc32, verify_crc32, append_crc32, extract_crc32, crc32_to_hex, hex_to_crc32
+from slipspeed.connections import create_connection, Connection, SerialConnection, TCPConnection, TCPServerConnection, UDPConnection, UDPServerConnection, FileConnection
+from slipspeed.stats import FrameStatistics
+from slipspeed.streaming import FrameMonitor, hexlify_frame
 
 __version__ = "1.0.0"
 __author__ = "Uli Köhler"

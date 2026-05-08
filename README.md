@@ -1,10 +1,12 @@
-# slipstream - Python SLIP Library
+# slipspeed - Python SLIP Library
 
-![slipstream logo](docs/SLIPstream-logo.png)
+![slipspeed logo](docs/SLIPstream-logo.png)
+
+pip install slipspeed
 
 A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame encoding, decoding, and monitoring with CRC32 validation and real-time statistics.
 
-**Note:** This library is fully compatible with [libSLIPStream](https://github.com/ulikoehler/libSLIPStream) (C++) and [SLIPSpeed](https://github.com/ulikoehler/slipspeed) (Rust) implementations.
+**Note:** This library is fully compatible with [libSLIPStream](https://github.com/ulikoehler/libSLIPStream) (C++) and [SLIPSpeed](https://github.com/ulikoehler/SLIPSpeed) (Rust) implementations.
 
 ## Features
 
@@ -23,7 +25,7 @@ A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame en
 ### From Git
 
 ```bash
-pip install git+https://github.com/ulikoehler/libSLIPStream.git#subdirectory=python
+pip install git+https://github.com/ulikoehler/PySLIPSpeed.git
 ```
 
 ### From Source
@@ -69,7 +71,7 @@ See the "Async API" section below for usage examples.
 ### 1. Simple Encoding/Decoding
 
 ```python
-from slipstream import encode_packet, decode_packet
+from slipspeed import encode_packet, decode_packet
 
 # Encode a message
 message = b"Hello, World!"
@@ -85,7 +87,7 @@ assert decoded == message
 ### 2. Monitor Serial Port (Most Common Use Case)
 
 ```python
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 # Connect to serial port
 conn = create_connection('/dev/ttyUSB0:115200')
@@ -113,7 +115,7 @@ monitor.close()
 
 ```bash
 # Launch ncurses dashboard
-slipstream -i /dev/ttyUSB0:115200
+slipspeed -i /dev/ttyUSB0:115200
 ```
 
 Dashboard shows:
@@ -135,7 +137,7 @@ cd python/examples
 python3 05_tcp_echo_server.py
 
 # Terminal 2: Connect with interactive mode
-slipstream -i tcp:localhost:5000
+slipspeed -i tcp:localhost:5000
 ```
 
 The echo server will:
@@ -148,7 +150,7 @@ See [examples/README.md](examples/README.md) for more details on all examples.
 ### 4. CRC32 Validation
 
 ```python
-from slipstream import calculate_crc32, append_crc32, extract_crc32, verify_crc32
+from slipspeed import calculate_crc32, append_crc32, extract_crc32, verify_crc32
 import struct
 
 # Create a frame with CRC32
@@ -172,7 +174,7 @@ The async API provides asyncio-based alternatives to the synchronous API. Instal
 
 ```python
 import asyncio
-from slipstream.async_slip import encode_packet_async, decode_packet_async
+from slipspeed.async_slip import encode_packet_async, decode_packet_async
 
 async def main():
     # Encode a message
@@ -192,8 +194,8 @@ asyncio.run(main())
 
 ```python
 import asyncio
-from slipstream.async_connections import create_async_connection
-from slipstream.async_streaming import AsyncFrameMonitor
+from slipspeed.async_connections import create_async_connection
+from slipspeed.async_streaming import AsyncFrameMonitor
 
 async def monitor_tcp():
     # Connect to TCP server
@@ -218,8 +220,8 @@ asyncio.run(monitor_tcp())
 
 ```python
 import asyncio
-from slipstream.async_connections import create_async_connection
-from slipstream.async_streaming import AsyncFrameMonitor
+from slipspeed.async_connections import create_async_connection
+from slipspeed.async_streaming import AsyncFrameMonitor
 
 async def monitor_iter():
     connection = await create_async_connection('tcp://localhost:5000')
@@ -239,7 +241,7 @@ asyncio.run(monitor_iter())
 
 ```python
 import asyncio
-from slipstream.async_slip import AsyncStreamingDecoder, encode_packet_async
+from slipspeed.async_slip import AsyncStreamingDecoder, encode_packet_async
 
 async def stream_decoder_example():
     decoder = AsyncStreamingDecoder()
@@ -261,7 +263,7 @@ asyncio.run(stream_decoder_example())
 
 ```python
 import asyncio
-from slipstream.async_slip import AsyncSlipCodec
+from slipspeed.async_slip import AsyncSlipCodec
 
 async def codec_example():
     codec = AsyncSlipCodec()
@@ -303,13 +305,13 @@ Note: Async examples require the `[async]` extras to be installed.
 
 ## Command-Line Tools
 
-### slipstream Command
+### slipspeed Command
 
-The `slipstream` command-line tool is a powerful utility for monitoring and analyzing SLIP frames from various I/O sources. It provides both simple text output and an interactive ncurses-based dashboard for real-time monitoring.
+The `slipspeed` command-line tool is a powerful utility for monitoring and analyzing SLIP frames from various I/O sources. It provides both simple text output and an interactive ncurses-based dashboard for real-time monitoring.
 
 #### Overview
 
-`slipstream` can monitor SLIP frames from:
+`slipspeed` can monitor SLIP frames from:
 - **Serial ports** - Connect to USB/UART serial devices
 - **TCP connections** - Act as TCP client or server
 - **UDP connections** - Send/receive UDP packets
@@ -319,11 +321,11 @@ The tool automatically decodes SLIP frames, validates CRC32 checksums (if presen
 
 #### Installation
 
-After installing the package, the `slipstream` command is available system-wide:
+After installing the package, the `slipspeed` command is available system-wide:
 
 ```bash
 pip install -e .
-slipstream --help
+slipspeed --help
 ```
 
 #### Connection Types
@@ -334,16 +336,16 @@ Monitor SLIP frames from a serial port:
 
 ```bash
 # Basic serial monitoring (default 115200 baud)
-slipstream /dev/ttyUSB0
+slipspeed /dev/ttyUSB0
 
 # Custom baudrate
-slipstream /dev/ttyUSB0:9600
+slipspeed /dev/ttyUSB0:9600
 
 # Windows COM port
-slipstream COM3:115200
+slipspeed COM3:115200
 
 # With interactive mode
-slipstream -i /dev/ttyUSB0:115200
+slipspeed -i /dev/ttyUSB0:115200
 ```
 
 **Requirements:** Install pyserial for serial support: `pip install pyserial`
@@ -356,16 +358,16 @@ Connect to a TCP server and monitor SLIP frames:
 
 ```bash
 # Connect to TCP server
-slipstream tcp:192.168.1.100:5000
+slipspeed tcp:192.168.1.100:5000
 
 # Connect to localhost
-slipstream tcp:localhost:9000
+slipspeed tcp:localhost:9000
 
 # With hex dump
-slipstream -x tcp:192.168.1.100:5000
+slipspeed -x tcp:192.168.1.100:5000
 
 # Interactive mode
-slipstream -i tcp:192.168.1.100:5000
+slipspeed -i tcp:192.168.1.100:5000
 ```
 
 Use case: Monitor SLIP frames from a network device that sends SLIP-encoded data over TCP.
@@ -376,14 +378,14 @@ Listen for TCP connections and monitor incoming SLIP frames:
 
 ```bash
 # Listen on port 5000 (all interfaces)
-slipstream tcp-listen:5000
+slipspeed tcp-listen:5000
 
 # Listen on specific interface
-slipstream tcp-listen:0.0.0.0:5000
-slipstream tcp-listen:127.0.0.1:5000
+slipspeed tcp-listen:0.0.0.0:5000
+slipspeed tcp-listen:127.0.0.1:5000
 
 # Interactive server mode
-slipstream -i tcp-listen:5000
+slipspeed -i tcp-listen:5000
 ```
 
 Use case: Set up a SLIP frame gateway that accepts connections from multiple clients.
@@ -394,13 +396,13 @@ Send/receive SLIP frames via UDP:
 
 ```bash
 # Send to UDP server
-slipstream udp:192.168.1.100:5000
+slipspeed udp:192.168.1.100:5000
 
 # With local bind port (for receiving responses)
-slipstream udp:192.168.1.100:5000:8000
+slipspeed udp:192.168.1.100:5000:8000
 
 # Interactive UDP monitoring
-slipstream -i udp:192.168.1.100:5000
+slipspeed -i udp:192.168.1.100:5000
 ```
 
 The format `udp:host:remote_port:local_port` allows you to specify which local port to bind to, useful for receiving responses.
@@ -411,13 +413,13 @@ Listen for UDP packets and decode SLIP frames:
 
 ```bash
 # Listen on port 5000
-slipstream udp-listen:5000
+slipspeed udp-listen:5000
 
 # Listen on specific interface
-slipstream udp-listen:0.0.0.0:5000
+slipspeed udp-listen:0.0.0.0:5000
 
 # With timeout
-slipstream -t 60 udp-listen:5000
+slipspeed -t 60 udp-listen:5000
 ```
 
 Use case: Monitor SLIP frames from multiple UDP sources (e.g., IoT devices broadcasting SLIP data).
@@ -428,16 +430,16 @@ Read and decode SLIP frames from a file:
 
 ```bash
 # Read binary file
-slipstream file:/path/to/data.bin
+slipspeed file:/path/to/data.bin
 
 # Read with specific mode
-slipstream file:/path/to/data.bin:rb
+slipspeed file:/path/to/data.bin:rb
 
 # With hex dump
-slipstream -x file:/path/to/data.bin
+slipspeed -x file:/path/to/data.bin
 
 # Disable CRC for files without CRC
-slipstream --no-crc file:/path/to/data.bin
+slipspeed --no-crc file:/path/to/data.bin
 ```
 
 File modes:
@@ -447,7 +449,7 @@ File modes:
 #### Command-Line Options
 
 ```
-slipstream [OPTIONS] CONNECTION
+slipspeed [OPTIONS] CONNECTION
 
 Positional Arguments:
   CONNECTION          Connection string (see Connection Types above)
@@ -535,46 +537,46 @@ Monitor for a specific duration, then exit with statistics:
 
 ```bash
 # Monitor for 5 minutes
-slipstream -t 300 /dev/ttyUSB0
+slipspeed -t 300 /dev/ttyUSB0
 
 # Monitor TCP for 30 seconds
-slipstream -t 30 tcp:192.168.1.100:5000
+slipspeed -t 30 tcp:192.168.1.100:5000
 ```
 
 ##### CRC Validation
 
-By default, `slipstream` validates CRC32 checksums on frames. Disable if your data doesn't include CRC:
+By default, `slipspeed` validates CRC32 checksums on frames. Disable if your data doesn't include CRC:
 
 ```bash
-slipstream --no-crc /dev/ttyUSB0
+slipspeed --no-crc /dev/ttyUSB0
 ```
 
 ##### Combining Options
 
 ```bash
 # Interactive mode with hex dump and timeout
-slipstream -i -x -t 60 /dev/ttyUSB0:115200
+slipspeed -i -x -t 60 /dev/ttyUSB0:115200
 
 # ASCII mode with CRC disabled for file
-slipstream -a --no-crc file:/path/to/data.bin
+slipspeed -a --no-crc file:/path/to/data.bin
 ```
 
 ##### Piping Output
 
 ```bash
 # Save frame data to file
-slipstream /dev/ttyUSB0 > frames.log
+slipspeed /dev/ttyUSB0 > frames.log
 
 # Count frames
-slipstream /dev/ttyUSB0 | grep "Frame" | wc -l
+slipspeed /dev/ttyUSB0 | grep "Frame" | wc -l
 
 # Extract only valid frames
-slipstream /dev/ttyUSB0 | grep "CRC: OK"
+slipspeed /dev/ttyUSB0 | grep "CRC: OK"
 ```
 
 #### Logging
 
-The `slipstream` tool supports comprehensive logging of received frames to files in multiple formats. Logging works in both interactive and non-interactive modes.
+The `slipspeed` tool supports comprehensive logging of received frames to files in multiple formats. Logging works in both interactive and non-interactive modes.
 
 ##### Basic Logging
 
@@ -582,10 +584,10 @@ Log all received frames to a file:
 
 ```bash
 # Log to file in text format
-slipstream --log-file frames.log /dev/ttyUSB0
+slipspeed --log-file frames.log /dev/ttyUSB0
 
 # Log with timeout
-slipstream --log-file frames.log -t 60 /dev/ttyUSB0
+slipspeed --log-file frames.log -t 60 /dev/ttyUSB0
 ```
 
 ##### Log Formats
@@ -595,7 +597,7 @@ slipstream --log-file frames.log -t 60 /dev/ttyUSB0
 Human-readable text format with timestamps:
 
 ```bash
-slipstream --log-file frames.log --log-format text /dev/ttyUSB0
+slipspeed --log-file frames.log --log-format text /dev/ttyUSB0
 ```
 
 Output:
@@ -609,7 +611,7 @@ Output:
 Machine-readable JSON format, one line per frame:
 
 ```bash
-slipstream --log-file frames.json --log-format json /dev/ttyUSB0
+slipspeed --log-file frames.json --log-format json /dev/ttyUSB0
 ```
 
 Output:
@@ -628,7 +630,7 @@ For frames with bad CRC:
 Comma-separated values for spreadsheet analysis:
 
 ```bash
-slipstream --log-file frames.csv --log-format csv /dev/ttyUSB0
+slipspeed --log-file frames.csv --log-format csv /dev/ttyUSB0
 ```
 
 Output:
@@ -643,7 +645,7 @@ frame_number,timestamp,crc_valid,payload_length,payload_hex
 Raw frame bytes without any metadata:
 
 ```bash
-slipstream --log-file frames.bin --log-format binary /dev/ttyUSB0
+slipspeed --log-file frames.bin --log-format binary /dev/ttyUSB0
 ```
 
 This saves the exact byte sequence of each SLIP frame, useful for:
@@ -658,7 +660,7 @@ This saves the exact byte sequence of each SLIP frame, useful for:
 Filter out frames with bad CRC:
 
 ```bash
-slipstream --log-file valid_frames.log --log-valid-only /dev/ttyUSB0
+slipspeed --log-file valid_frames.log --log-valid-only /dev/ttyUSB0
 ```
 
 **Exclude Timestamps**
@@ -666,7 +668,7 @@ slipstream --log-file valid_frames.log --log-valid-only /dev/ttyUSB0
 Reduce log file size by omitting timestamps:
 
 ```bash
-slipstream --log-file frames.log --log-no-timestamps /dev/ttyUSB0
+slipspeed --log-file frames.log --log-no-timestamps /dev/ttyUSB0
 ```
 
 Text format output without timestamps:
@@ -680,7 +682,7 @@ Frame #2 CRC: OK Length: 8 HEX: 7465737464617461
 Log the complete SLIP frame (including END markers and escape sequences) instead of just the decoded payload:
 
 ```bash
-slipstream --log-file raw_frames.log --log-raw /dev/ttyUSB0
+slipspeed --log-file raw_frames.log --log-raw /dev/ttyUSB0
 ```
 
 Use this when you need the exact frame bytes for analysis or replay.
@@ -690,7 +692,7 @@ Use this when you need the exact frame bytes for analysis or replay.
 Add new frames to an existing log file instead of overwriting:
 
 ```bash
-slipstream --log-file frames.log --log-append /dev/ttyUSB0
+slipspeed --log-file frames.log --log-append /dev/ttyUSB0
 ```
 
 Useful for continuous logging across multiple sessions.
@@ -700,25 +702,25 @@ Useful for continuous logging across multiple sessions.
 **Log valid frames to CSV for analysis**
 
 ```bash
-slipstream --log-file analysis.csv --log-format csv --log-valid-only /dev/ttyUSB0
+slipspeed --log-file analysis.csv --log-format csv --log-valid-only /dev/ttyUSB0
 ```
 
 **Log raw frames to binary file for replay**
 
 ```bash
-slipstream --log-file capture.bin --log-format binary --log-raw /dev/ttyUSB0
+slipspeed --log-file capture.bin --log-format binary --log-raw /dev/ttyUSB0
 ```
 
 **Log to JSON without timestamps for minimal size**
 
 ```bash
-slipstream --log-file frames.json --log-format json --log-no-timestamps /dev/ttyUSB0
+slipspeed --log-file frames.json --log-format json --log-no-timestamps /dev/ttyUSB0
 ```
 
 **Interactive mode with logging**
 
 ```bash
-slipstream -i --log-file frames.log /dev/ttyUSB0
+slipspeed -i --log-file frames.log /dev/ttyUSB0
 ```
 
 This shows the ncurses dashboard while simultaneously logging all frames.
@@ -726,14 +728,14 @@ This shows the ncurses dashboard while simultaneously logging all frames.
 **Append to log with timeout**
 
 ```bash
-slipstream --log-file frames.log --log-append -t 300 /dev/ttyUSB0
+slipspeed --log-file frames.log --log-append -t 300 /dev/ttyUSB0
 ```
 
 Log frames for 5 minutes, appending to an existing log file.
 
 ##### Log File Management
 
-When logging is enabled, `slipstream` displays the log file and format at startup:
+When logging is enabled, `slipspeed` displays the log file and format at startup:
 
 ```
 Connected to /dev/ttyUSB0
@@ -757,21 +759,21 @@ Logged 100 frames to frames.log
 
 ```bash
 # Run in background, log all frames for 24 hours
-nohup slipstream --log-file $(date +%Y%m%d).log --log-append -t 86400 /dev/ttyUSB0 &
+nohup slipspeed --log-file $(date +%Y%m%d).log --log-append -t 86400 /dev/ttyUSB0 &
 ```
 
 **Debugging frame issues**
 
 ```bash
 # Log raw frames to analyze encoding problems
-slipstream --log-file debug.bin --log-format binary --log-raw /dev/ttyUSB0
+slipspeed --log-file debug.bin --log-format binary --log-raw /dev/ttyUSB0
 ```
 
 **Data analysis pipeline**
 
 ```bash
 # Log to JSON for processing with other tools
-slipstream --log-file frames.json --log-format json /dev/ttyUSB0
+slipspeed --log-file frames.json --log-format json /dev/ttyUSB0
 
 # Process with jq
 jq '.payload_length' frames.json | sort | uniq -c
@@ -781,7 +783,7 @@ jq '.payload_length' frames.json | sort | uniq -c
 
 ```bash
 # Log only valid frames to verify CRC performance
-slipstream --log-file qa.log --log-valid-only /dev/ttyUSB0
+slipspeed --log-file qa.log --log-valid-only /dev/ttyUSB0
 ```
 
 #### Statistics Output
@@ -810,9 +812,9 @@ Avg Payload Size:          34.2 bytes
 - **Files:** Reads as fast as disk I/O allows
 - **Interactive mode:** Slight overhead from ncurses rendering (~5-10% CPU)
 
-#### Troubleshooting slipstream
+#### Troubleshooting slipspeed
 
-##### Issue: "command not found: slipstream"
+##### Issue: "command not found: slipspeed"
 
 **Solution:** Ensure the package is installed:
 ```bash
@@ -822,7 +824,7 @@ pip install -e .
 
 Or use directly:
 ```bash
-python scripts/slipstream.py /dev/ttyUSB0
+python scripts/slipspeed.py /dev/ttyUSB0
 ```
 
 ##### Issue: "Permission denied" on serial port
@@ -851,8 +853,8 @@ nc -zv 192.168.1.100 5000
 
 **Solution:** Use absolute path or ensure relative path is correct:
 ```bash
-slipstream file:/home/user/data.bin  # Absolute
-slipstream file:./data.bin           # Relative
+slipspeed file:/home/user/data.bin  # Absolute
+slipspeed file:./data.bin           # Relative
 ```
 
 ##### Issue: High CPU usage in interactive mode
@@ -864,7 +866,7 @@ slipstream file:./data.bin           # Relative
 ### Core Modules
 
 ```
-slipstream/
+slipspeed/
 ├── slip.py          # SLIP encoding/decoding and StreamingDecoder
 ├── crc.py           # CRC32 calculation with Ethernet polynomial
 ├── connections.py   # Serial and TCP connection handlers
@@ -1002,7 +1004,7 @@ class FrameStatistics:
 Monitor a serial device for SLIP frames with automatic statistics:
 
 ```python
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 conn = create_connection('/dev/ttyUSB0:115200')
 monitor = FrameMonitor(conn, check_crc=True)
@@ -1030,7 +1032,7 @@ monitor.print_stats()
 Process frames with custom logic:
 
 ```python
-from slipstream import create_connection, FrameMonitor
+from slipspeed import create_connection, FrameMonitor
 
 conn = create_connection('/dev/ttyUSB0')
 frames_received = []
@@ -1053,7 +1055,7 @@ print(f"Total valid frames: {len(frames_received)}")
 Interactive ncurses mode for live monitoring:
 
 ```bash
-slipstream -i -t 300 /dev/ttyUSB0:115200
+slipspeed -i -t 300 /dev/ttyUSB0:115200
 ```
 
 Shows live statistics including:

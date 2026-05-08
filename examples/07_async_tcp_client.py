@@ -12,8 +12,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from slipstream.async_connections import create_async_connection
-from slipstream.async_streaming import AsyncFrameMonitor
+from slipspeed.async_connections import create_async_connection
+from slipspeed.async_streaming import AsyncFrameMonitor
 
 
 async def tcp_client_example(host='localhost', port=5000):
@@ -67,8 +67,8 @@ async def tcp_server_example(host='0.0.0.0', port=5000):
     print(f"Starting server on {host}:{port}...")
     
     try:
-        from slipstream.async_connections import AsyncTCPServerConnection
-        from slipstream.async_slip import encode_packet_async
+        from slipspeed.async_connections import AsyncTCPServerConnection
+        from slipspeed.async_slip import encode_packet_async
         
         # Create TCP server
         server = AsyncTCPServerConnection(host, port)

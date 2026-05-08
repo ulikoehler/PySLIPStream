@@ -5,7 +5,7 @@ Demonstrates async SLIP packet encoding and decoding using the async API.
 """
 
 import asyncio
-from slipstream.async_slip import encode_packet_async, decode_packet_async, END, ESC
+from slipspeed.async_slip import encode_packet_async, decode_packet_async, END, ESC
 
 
 async def main():

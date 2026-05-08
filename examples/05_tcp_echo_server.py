@@ -33,7 +33,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from slipstream import (
+from slipspeed import (
     create_connection,
     encode_packet,
     decode_packet

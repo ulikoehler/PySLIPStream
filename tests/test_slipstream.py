@@ -20,19 +20,19 @@ from io import StringIO
 import sys
 
 # Import all modules to test
-import slipstream
-from slipstream.slip import encode_packet, decode_packet, StreamingDecoder, END, ESC, ESCEND, ESCESC
-from slipstream.crc import calculate_crc32, verify_crc32, append_crc32, extract_crc32, crc32_to_hex, hex_to_crc32
-from slipstream.stats import FrameStatistics
-from slipstream.connections import (SerialConnection, TCPConnection, TCPServerConnection,
+import slipspeed
+from slipspeed.slip import encode_packet, decode_packet, StreamingDecoder, END, ESC, ESCEND, ESCESC
+from slipspeed.crc import calculate_crc32, verify_crc32, append_crc32, extract_crc32, crc32_to_hex, hex_to_crc32
+from slipspeed.stats import FrameStatistics
+from slipspeed.connections import (SerialConnection, TCPConnection, TCPServerConnection,
                                    UDPConnection, UDPServerConnection, FileConnection,
                                    create_connection, Connection)
-from slipstream.streaming import FrameMonitor, hexlify_frame
+from slipspeed.streaming import FrameMonitor, hexlify_frame
 
-# Import FrameLogger from slipstream script
+# Import FrameLogger from slipspeed script
 sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
 try:
-    from slipstream import FrameLogger
+    from slipspeed import FrameLogger
 except (ImportError, ModuleNotFoundError):
     # FrameLogger is in the scripts/slipstream.py, import directly
     import importlib.util
@@ -1202,7 +1202,7 @@ class TestConnectionsAdvanced:
     
     def test_create_connection_serial_string(self):
         """Test parsing various serial connection strings."""
-        from slipstream.connections import create_connection
+        from slipspeed.connections import create_connection
         
         # Test that create_connection can parse serial strings
         test_cases = [
@@ -1584,7 +1584,7 @@ class TestIntegrationAdvanced:
     
     def test_crc_with_streaming_decoder(self):
         """Test CRC validation with streaming decoder."""
-        from slipstream.streaming import FrameMonitor
+        from slipspeed.streaming import FrameMonitor
         
         mock_conn = MagicMock()
         monitor = FrameMonitor(mock_conn, check_crc=True)
@@ -1641,7 +1641,7 @@ class TestIntegrationAdvanced:
 # ============================================================================
 
 class TestFrameLogger:
-    """Test FrameLogger class from slipstream script."""
+    """Test FrameLogger class from slipspeed script."""
     
     def test_frame_logger_text_format(self, tmp_path):
         """Test FrameLogger with text format."""
