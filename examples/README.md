@@ -93,6 +93,46 @@ python3 04_serial_monitor_demo.py --monitor /dev/ttyUSB0 --duration 60
 - Error handling and graceful shutdown
 - Real-world timing and data flow
 
+### 5. TCP Echo Server (`05_tcp_echo_server.py`)
+
+**What it shows:**
+- TCP server implementation for SLIP communication
+- Periodic message transmission (1Hz by default)
+- Echo server that responds to incoming messages with a prefix
+- Ideal for testing the interactive ncurses UI mode
+- Multi-threaded handling of periodic messages and client requests
+
+**Run it:**
+```bash
+# Start the server (listens on port 5000)
+python3 05_tcp_echo_server.py
+
+# Start on custom port
+python3 05_tcp_echo_server.py --port 6000
+
+# Start with 0.5 second interval
+python3 05_tcp_echo_server.py --interval 0.5
+
+# Start on specific interface
+python3 05_tcp_echo_server.py --host 127.0.0.1
+```
+
+**Testing with slipstream:**
+```bash
+# In another terminal, connect with interactive mode
+slipstream -i tcp:localhost:5000
+
+# Or connect with non-interactive mode
+slipstream tcp:localhost:5000
+```
+
+**Key concepts:**
+- TCP server mode with connection handling
+- Periodic message transmission for testing
+- Echo server pattern for bidirectional communication
+- Multi-threading for concurrent I/O operations
+- Integration with interactive ncurses UI for real-time testing
+
 ## Running the Examples
 
 ### Prerequisites
@@ -141,6 +181,66 @@ python3 04_serial_monitor_demo.py --monitor /dev/ttyUSB0:115200
 
 # Monitor for 5 minutes with statistics
 python3 04_serial_monitor_demo.py --monitor /dev/ttyUSB0:115200 --duration 300
+```
+
+### Example 5: Testing Interactive Mode
+
+The TCP echo server (Example 5) is ideal for testing the interactive ncurses UI mode without requiring serial hardware.
+
+**Step-by-step guide:**
+
+1. **Start the TCP echo server** (Terminal 1):
+```bash
+python3 05_tcp_echo_server.py
+```
+The server will start listening on port 5000 and display:
+```
+TCP Echo Server listening on 0.0.0.0:5000
+Periodic message interval: 1.0 seconds
+============================================================
+Waiting for client connection...
+```
+
+2. **Connect with interactive mode** (Terminal 2):
+```bash
+slipstream -i tcp:localhost:5000
+```
+
+3. **Test the interactive UI features:**
+   - **Watch incoming messages**: The server sends periodic messages every second
+   - **Send a text message**: Type "Hello" and press Enter
+     - The server will echo back: "Echo: Hello"
+   - **Toggle to hex mode**: Press `m`
+     - Type "48 65 6C 6C 6F" (hex for "Hello") and press Enter
+     - The server will echo back: "Echo (hex): 48656C6C6F"
+   - **Toggle stats display**: Press `s` to show/hide statistics
+   - **Clear history**: Press `c` to clear message history
+   - **Quit**: Press `q` to exit
+
+4. **Test with non-interactive mode** (optional):
+```bash
+slipstream tcp:localhost:5000 -t 10
+```
+This will monitor for 10 seconds and print statistics.
+
+**Expected output in interactive mode:**
+```
+┌─────────────────────────────────────────────────────┐
+│              SLIP Frame Monitor                       │
+├─────────────────────────────────────────────────────┤
+│ Statistics                                           │
+│   Frames:      5  |  Errors:   0  |  Bad CRC: 0      │
+│   Bytes RX:    150  |  Payload: 120                  │
+│   Rate:        5.00 fps  |  150.00 bps                │
+├─────────────────────────────────────────────────────┤
+│ Messages (RX=received, TX=sent)                      │
+│   RX 12:34:56 | 25 bytes | HEX: C0536572766572...    │
+│   TX 12:34:57 | 5 bytes | TEXT: Hello                │
+│   RX 12:34:57 | 10 bytes | HEX: C04563686F3A20...    │
+├─────────────────────────────────────────────────────┤
+│ [TEXT] Send: Hello World_                           │
+│ q: quit  | m: toggle text/hex mode  | s: toggle stats  | c: clear  | Enter: send
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Command-Line Tool
