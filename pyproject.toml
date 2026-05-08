@@ -57,10 +57,11 @@ serial = ["pyserial>=3.5"]
 dev = ["pytest>=6.0", "pytest-cov>=2.10"]
 
 [tool.setuptools]
-packages = ["slipstream"]
+packages = ["slipstream", "scripts"]
 
 [tool.setuptools.package-dir]
 slipstream = "slipstream"
+scripts = "scripts"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

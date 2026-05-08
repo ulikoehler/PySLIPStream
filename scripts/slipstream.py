@@ -780,6 +780,12 @@ Examples:
         help='Append to log file instead of overwriting'
     )
     
+    parser.add_argument(
+        '-f', '--follow',
+        action='store_true',
+        help='For file inputs, follow appended data (like tail -f)'
+    )
+    
     return parser
 
 
@@ -813,6 +819,13 @@ def main():
     except Exception as e:
         print(f"Error: Failed to connect: {e}", file=sys.stderr)
         return 1
+    
+    # For file connections, exit immediately unless --follow is given
+    from slipstream.connections import FileConnection
+    if isinstance(connection, FileConnection) and not args.follow:
+        # If no explicit timeout was given, set to 0 to exit immediately after reading
+        if args.timeout is None:
+            args.timeout = 0
     
     try:
         # Select monitor type
