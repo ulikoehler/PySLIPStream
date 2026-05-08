@@ -276,6 +276,27 @@ asyncio.run(codec_example())
 
 **Note:** The async API is optional and only available when the `[async]` extras are installed. If not installed, importing async modules will raise ImportError. The synchronous API remains fully functional without async dependencies.
 
+### Async Examples
+
+The following async examples are available in the `examples/` directory:
+
+- **06_async_basic_encoding.py** - Basic async SLIP encoding and decoding
+- **07_async_tcp_client.py** - Async TCP client and server examples
+- **08_async_streaming_decoder.py** - Async streaming decoder with chunked data
+- **09_async_codec.py** - Rust-style AsyncSlipCodec usage
+- **10_async_frame_monitor.py** - Async frame monitor with mock connection
+
+Run async examples:
+```bash
+cd python/examples
+python 06_async_basic_encoding.py
+python 08_async_streaming_decoder.py
+python 09_async_codec.py
+python 10_async_frame_monitor.py
+```
+
+Note: Async examples require the `[async]` extras to be installed.
+
 ## Command-Line Tools
 
 ### slipstream Command

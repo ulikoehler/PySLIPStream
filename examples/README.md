@@ -98,6 +98,109 @@ python3 04_serial_monitor_demo.py --monitor /dev/ttyUSB0 --duration 60
 **What it shows:**
 - TCP server implementation for SLIP communication
 - Periodic message transmission (1Hz by default)
+
+## Async Examples (Optional)
+
+The following async examples demonstrate the asyncio-based API. These require the `[async]` extras to be installed:
+
+```bash
+pip install -e ".[async]"
+```
+
+### 6. Async Basic Encoding (`06_async_basic_encoding.py`)
+
+**What it shows:**
+- Async SLIP encoding and decoding
+- Handling special bytes asynchronously
+- Large packet processing
+- Round-trip verification
+
+**Run it:**
+```bash
+python3 06_async_basic_encoding.py
+```
+
+**Key concepts:**
+- `encode_packet_async()` and `decode_packet_async()`
+- Async/await patterns for SLIP operations
+- Error handling in async context
+
+### 7. Async TCP Client (`07_async_tcp_client.py`)
+
+**What it shows:**
+- Async TCP client and server connections
+- Async frame monitoring over TCP
+- Async frame iteration
+
+**Run it:**
+```bash
+# Client mode
+python3 07_async_tcp_client.py --mode client --host localhost --port 5000
+
+# Server mode
+python3 07_async_tcp_client.py --mode server --port 5000
+```
+
+**Key concepts:**
+- `create_async_connection()` factory
+- `AsyncFrameMonitor` with async iteration
+- Async TCP client/server patterns
+
+### 8. Async Streaming Decoder (`08_async_streaming_decoder.py`)
+
+**What it shows:**
+- `AsyncStreamingDecoder` for continuous streams
+- Feeding data in chunks (simulating network streams)
+- Callback-based async frame processing
+- Statistics tracking
+
+**Run it:**
+```bash
+python3 08_async_streaming_decoder.py
+```
+
+**Key concepts:**
+- Stateful async streaming decoder
+- Chunk-based data feeding
+- Async callbacks for frame notifications
+
+### 9. Async Codec (`09_async_codec.py`)
+
+**What it shows:**
+- Rust-style `AsyncSlipCodec` usage
+- Stateful decoding from buffers
+- Partial frame handling
+- `decode_eof()` for stream termination
+
+**Run it:**
+```bash
+python3 09_async_codec.py
+```
+
+**Key concepts:**
+- Buffer-based decoding (like Rust's asynchronous_codec)
+- Stateful codec with reset capability
+- Handling incomplete frames
+- Stream termination detection
+
+### 10. Async Frame Monitor (`10_async_frame_monitor.py`)
+
+**What it shows:**
+- `AsyncFrameMonitor` with mock connection
+- Frame callbacks and statistics
+- Sending frames asynchronously
+- CRC validation in async context
+
+**Run it:**
+```bash
+python3 10_async_frame_monitor.py
+```
+
+**Key concepts:**
+- Mock connection for testing
+- Async frame monitoring patterns
+- Statistics in async context
+- Frame sending with async connections
 - Echo server that responds to incoming messages with a prefix
 - Ideal for testing the interactive ncurses UI mode
 - Multi-threaded handling of periodic messages and client requests
