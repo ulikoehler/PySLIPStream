@@ -663,22 +663,27 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Connection Types:
-  Serial:     /dev/ttyUSB0 or /dev/ttyUSB0:115200
-  TCP Client: tcp:192.168.1.1:5000
+  Serial:     /dev/ttyUSB0 or /dev/ttyUSB0:115200 or serial:///dev/ttyUSB0
+  TCP Client: tcp:192.168.1.1:5000 or tcp://192.168.1.1:5000
   TCP Server: tcp-listen:5000 or tcp-listen:0.0.0.0:5000
   UDP Client: udp:192.168.1.1:5000 or udp:192.168.1.1:5000:8000 (local bind port)
   UDP Server: udp-listen:5000 or udp-listen:0.0.0.0:5000
-  File:       file:/path/to/file or file:/path/to/file:rb
+  File:       file:/path/to/file or file:/path/to/file:rb or file:///path/to/file
+  Auto-detect: Path is auto-detected as file (regular file) or serial (character device)
 
 Examples:
-  # Monitor serial port
+  # Monitor serial port (auto-detected as character device)
   slipstream /dev/ttyUSB0
   
   # Monitor with custom baudrate
   slipstream /dev/ttyUSB0:115200
   
+  # Monitor serial port with explicit URL scheme
+  slipstream serial:///dev/ttyUSB0
+  
   # Monitor TCP connection (client)
   slipstream tcp:192.168.1.1:5000
+  slipstream tcp://192.168.1.1:5000
   
   # Listen on TCP port (server)
   slipstream tcp-listen:5000
@@ -689,8 +694,12 @@ Examples:
   # Listen on UDP port (server)
   slipstream udp-listen:5000
   
-  # Monitor file
+  # Monitor file (auto-detected as regular file)
+  slipstream /path/to/file.bin
+  
+  # Monitor file with explicit URL scheme
   slipstream file:/path/to/file.bin
+  slipstream file:///path/to/file.bin
 ''' + ('''
   # Interactive ncurses UI mode (with message sending)
   slipstream -i /dev/ttyUSB0
@@ -702,6 +711,9 @@ Examples:
   
   # Show hex dump of each frame
   slipstream -x /dev/ttyUSB0
+  
+  # Follow file for appended data (like tail -f)
+  slipstream -f /path/to/file.bin
         '''
     )
     

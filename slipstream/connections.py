@@ -6,6 +6,8 @@ Provides unified interface for reading from various I/O sources.
 
 import socket
 import time
+import os
+import stat
 from typing import Optional, Union, Tuple
 from abc import ABC, abstractmethod
 
@@ -502,25 +504,85 @@ class TCPServerConnection(Connection):
         return self.server_socket is not None
 
 
+def _detect_connection_type(path: str) -> Optional[str]:
+    """
+    Detect if a path is a regular file or character device.
+    
+    Args:
+        path: Path to check
+        
+    Returns:
+        'file' if regular file, 'serial' if character device, None if doesn't exist
+    """
+    try:
+        file_stat = os.stat(path)
+        if stat.S_ISREG(file_stat.st_mode):
+            return 'file'
+        elif stat.S_ISCHR(file_stat.st_mode):
+            return 'serial'
+    except (OSError, FileNotFoundError):
+        pass
+    return None
+
+
 def create_connection(connection_string: str, timeout: float = 0.1) -> Connection:
     """
     Create a connection from a connection string.
     
     Args:
         connection_string: 
-            - For serial: '/dev/ttyUSB0' or 'COM3' or '/dev/ttyUSB0:115200'
-            - For TCP client: 'tcp:192.168.1.1:5000' or 'localhost:5000'
+            - For serial: '/dev/ttyUSB0' or 'COM3' or '/dev/ttyUSB0:115200' or 'serial:///dev/ttyUSB0'
+            - For TCP client: 'tcp:192.168.1.1:5000' or 'tcp://192.168.1.1:5000' or 'localhost:5000'
             - For TCP server: 'tcp-listen:5000' or 'tcp-listen:0.0.0.0:5000'
             - For UDP client: 'udp:192.168.1.1:5000' or 'udp:192.168.1.1:5000:8000' (last is local bind port)
             - For UDP server: 'udp-listen:5000' or 'udp-listen:0.0.0.0:5000'
-            - For file: 'file:/path/to/file' or 'file:/path/to/file:rb' (mode optional)
+            - For file: 'file:/path/to/file' or 'file:/path/to/file:rb' or 'file:///path/to/file' (mode optional)
+            - Auto-detect: Path is auto-detected as file (regular file) or serial (character device) if no scheme
         timeout: Read timeout in seconds
         
     Returns:
         Connection object (SerialConnection, TCPConnection, TCPServerConnection,
                           UDPConnection, UDPServerConnection, or FileConnection)
     """
-    if connection_string.startswith('tcp-listen:'):
+    # Handle URL-style schemes with //
+    if connection_string.startswith('tcp://'):
+        # TCP client connection with tcp:// scheme
+        tcp_part = connection_string[6:]
+        parts = tcp_part.rsplit(':', 1)
+        if len(parts) != 2:
+            raise ValueError(f"Invalid TCP connection string: {connection_string}")
+        host, port_str = parts
+        try:
+            port = int(port_str)
+        except ValueError:
+            raise ValueError(f"Invalid port number in connection string: {port_str}")
+        return TCPConnection(host, port, timeout=timeout)
+    
+    elif connection_string.startswith('serial://'):
+        # Serial connection with serial:// scheme
+        serial_part = connection_string[9:]
+        if ':' in serial_part:
+            port, baud_str = serial_part.rsplit(':', 1)
+            try:
+                baudrate = int(baud_str)
+            except ValueError:
+                raise ValueError(f"Invalid baudrate in connection string: {baud_str}")
+        else:
+            port = serial_part
+            baudrate = 115200
+        return SerialConnection(port, baudrate=baudrate, timeout=timeout)
+    
+    elif connection_string.startswith('file://'):
+        # File connection with file:// scheme
+        file_path = connection_string[7:]
+        if ':' in file_path:
+            parts = file_path.rsplit(':', 1)
+            if len(parts) == 2:
+                filepath, mode = parts
+                return FileConnection(filepath, mode=mode, timeout=timeout)
+        return FileConnection(file_path, timeout=timeout)
+    
+    elif connection_string.startswith('tcp-listen:'):
         # TCP server connection
         tcp_part = connection_string[11:]
         if ':' in tcp_part:
@@ -602,15 +664,31 @@ def create_connection(connection_string: str, timeout: float = 0.1) -> Connectio
         return FileConnection(file_path, timeout=timeout)
     
     else:
-        # Serial connection
-        if ':' in connection_string:
-            port, baud_str = connection_string.rsplit(':', 1)
-            try:
-                baudrate = int(baud_str)
-            except ValueError:
-                raise ValueError(f"Invalid baudrate in connection string: {baud_str}")
+        # Auto-detect: check if path is a file or character device
+        detected_type = _detect_connection_type(connection_string)
+        if detected_type == 'file':
+            return FileConnection(connection_string, timeout=timeout)
+        elif detected_type == 'serial':
+            # Serial connection
+            if ':' in connection_string:
+                port, baud_str = connection_string.rsplit(':', 1)
+                try:
+                    baudrate = int(baud_str)
+                except ValueError:
+                    raise ValueError(f"Invalid baudrate in connection string: {baud_str}")
+            else:
+                port = connection_string
+                baudrate = 115200
+            return SerialConnection(port, baudrate=baudrate, timeout=timeout)
         else:
-            port = connection_string
-            baudrate = 115200
-        
-        return SerialConnection(port, baudrate=baudrate, timeout=timeout)
+            # Default to serial connection for backward compatibility
+            if ':' in connection_string:
+                port, baud_str = connection_string.rsplit(':', 1)
+                try:
+                    baudrate = int(baud_str)
+                except ValueError:
+                    raise ValueError(f"Invalid baudrate in connection string: {baud_str}")
+            else:
+                port = connection_string
+                baudrate = 115200
+            return SerialConnection(port, baudrate=baudrate, timeout=timeout)
