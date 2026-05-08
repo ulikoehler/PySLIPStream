@@ -1,5 +1,5 @@
 """
-slipstream: Python library for SLIP frame monitoring and processing.
+slipspeed: Python library for SLIP frame monitoring and processing.
 
 This library provides comprehensive SLIP (Serial Line Internet Protocol) support including:
 - Encoding and decoding of SLIP packets
@@ -37,7 +37,7 @@ from slipspeed.connections import create_connection, Connection, SerialConnectio
 from slipspeed.stats import FrameStatistics
 from slipspeed.streaming import FrameMonitor, hexlify_frame
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Uli Köhler"
 
 __all__ = [

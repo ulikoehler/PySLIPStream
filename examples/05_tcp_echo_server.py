@@ -7,9 +7,9 @@ This example demonstrates a TCP server that:
 2. Periodically (1Hz) transmits SLIP-encoded text messages
 3. Echoes any incoming SLIP messages with a prefix
 
-This is useful for testing the interactive ncurses UI mode of slipstream.
+This is useful for testing the interactive ncurses UI mode of slipspeed.
 You can run this server and then connect to it using:
-  slipstream -i tcp:localhost:5000
+  slipspeed -i tcp:localhost:5000
 
 The server will send periodic messages and echo back anything you send.
 
@@ -18,10 +18,10 @@ Usage:
     python3 05_tcp_echo_server.py
 
     # In another terminal, connect with interactive mode
-    slipstream -i tcp:localhost:5000
+    slipspeed -i tcp:localhost:5000
 
     # Or connect with non-interactive mode
-    slipstream tcp:localhost:5000
+    slipspeed tcp:localhost:5000
 """
 
 import sys
@@ -198,12 +198,12 @@ Examples:
   # Start server on specific interface
   python3 05_tcp_echo_server.py --host 127.0.0.1
 
-Testing with slipstream:
+Testing with slipspeed:
   # In another terminal, connect with interactive mode
-  slipstream -i tcp:localhost:5000
+  slipspeed -i tcp:localhost:5000
   
   # Or connect with non-interactive mode
-  slipstream tcp:localhost:5000
+  slipspeed tcp:localhost:5000
         '''
     )
     

@@ -1,5 +1,5 @@
 """
-Comprehensive unit tests for the Python slipstream library.
+Comprehensive unit tests for the Python slipspeed library.
 
 Achieves 100% code coverage for all modules:
 - slip.py (encoding, decoding, streaming)
@@ -34,13 +34,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
 try:
     from slipspeed import FrameLogger
 except (ImportError, ModuleNotFoundError):
-    # FrameLogger is in the scripts/slipstream.py, import directly
+    # FrameLogger is in the scripts/slipspeed.py, import directly
     import importlib.util
-    spec = importlib.util.spec_from_file_location("slipstream_script", str(Path(__file__).parent.parent / 'scripts' / 'slipstream.py'))
+    spec = importlib.util.spec_from_file_location("slipspeed_script", str(Path(__file__).parent.parent / 'scripts' / 'slipspeed.py'))
     if spec and spec.loader:
-        slipstream_script = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(slipstream_script)
-        FrameLogger = getattr(slipstream_script, 'FrameLogger', None)
+        slipspeed_script = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(slipspeed_script)
+        FrameLogger = getattr(slipspeed_script, 'FrameLogger', None)
     else:
         FrameLogger = None
 
@@ -376,7 +376,7 @@ class TestCRC32:
         payload = b"payload_data"
         invalid_crc = b"\xFF\xFF"
         
-        diagnosis = slipstream.crc.diagnose_crc_error(payload, invalid_crc)
+        diagnosis = slipspeed.crc.diagnose_crc_error(payload, invalid_crc)
         assert diagnosis['error'] == 'invalid_crc_length'
         assert diagnosis['received'] is None
         assert diagnosis['expected'] is None
@@ -388,7 +388,7 @@ class TestCRC32:
         missing_xor = (~expected) & 0xFFFFFFFF
         bad_crc_bytes = struct.pack('<I', missing_xor)
 
-        diagnosis = slipstream.crc.diagnose_crc_error(payload, bad_crc_bytes)
+        diagnosis = slipspeed.crc.diagnose_crc_error(payload, bad_crc_bytes)
         assert diagnosis['received'] == missing_xor
         assert diagnosis['expected'] == expected
         assert 'missing final XOR' in diagnosis['diagnosis']
@@ -401,7 +401,7 @@ class TestCRC32:
         swapped = int.from_bytes(expected_bytes[::-1], 'little')
         bad_crc_bytes = struct.pack('<I', swapped)
 
-        diagnosis = slipstream.crc.diagnose_crc_error(payload, bad_crc_bytes)
+        diagnosis = slipspeed.crc.diagnose_crc_error(payload, bad_crc_bytes)
         assert 'endianness' in diagnosis['diagnosis']
     
     def test_crc_error_diagnosis_both_issues(self):
@@ -413,7 +413,7 @@ class TestCRC32:
         swapped = int.from_bytes(expected_xor_bytes[::-1], 'little')
         bad_crc_bytes = struct.pack('<I', swapped)
 
-        diagnosis = slipstream.crc.diagnose_crc_error(payload, bad_crc_bytes)
+        diagnosis = slipspeed.crc.diagnose_crc_error(payload, bad_crc_bytes)
         assert 'swapped' in diagnosis['diagnosis'] and 'XOR' in diagnosis['diagnosis']
     
     def test_crc32_to_hex(self):
@@ -668,7 +668,7 @@ class TestSerialConnectionMocked:
 class TestTCPConnection:
     """Test TCPConnection class."""
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_open(self, mock_socket_module):
         """Open TCP connection."""
         mock_socket = MagicMock()
@@ -679,7 +679,7 @@ class TestTCPConnection:
         assert conn.is_open() is True
         mock_socket.connect.assert_called_once_with(('192.168.1.1', 5000))
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_read(self, mock_socket_module):
         """Read from TCP connection."""
         mock_socket = MagicMock()
@@ -691,7 +691,7 @@ class TestTCPConnection:
         
         assert data == b"tcp_data"
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_write(self, mock_socket_module):
         """Write to TCP connection."""
         mock_socket = MagicMock()
@@ -703,7 +703,7 @@ class TestTCPConnection:
         
         assert written == 4
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_write_closed(self, mock_socket_module):
         """Write returns 0 when socket is closed."""
         mock_socket = MagicMock()
@@ -713,7 +713,7 @@ class TestTCPConnection:
         conn = TCPConnection('localhost', 5000)
         assert conn.write(b"data") == 0
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_timeout(self, mock_socket_module):
         """Handle TCP timeout gracefully."""
         import socket as socket_module
@@ -730,7 +730,7 @@ class TestTCPConnection:
         # Should return empty bytes on timeout
         assert data == b""
 
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_close_and_read_closed(self, mock_socket_module):
         """Close TCP connection and verify no further reads are allowed."""
         mock_socket = MagicMock()
@@ -741,7 +741,7 @@ class TestTCPConnection:
         assert conn.is_open() is False
         assert conn.read() == b''
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_open_error(self, mock_socket_module):
         """TCP connection handles open errors."""
         mock_socket_module.socket.side_effect = OSError("Connection refused")
@@ -749,7 +749,7 @@ class TestTCPConnection:
         with pytest.raises(RuntimeError, match="Failed to connect"):
             TCPConnection('localhost', 5000)
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_read_exception(self, mock_socket_module):
         """TCP connection handles read exceptions."""
         import socket as socket_module
@@ -762,7 +762,7 @@ class TestTCPConnection:
         data = conn.read()
         assert data == b''
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_close_exception(self, mock_socket_module):
         """TCP connection handles close exceptions."""
         mock_socket = MagicMock()
@@ -777,7 +777,7 @@ class TestTCPConnection:
 class TestCreateConnection:
     """Test create_connection factory function."""
     
-    @patch('slipstream.connections.SerialConnection')
+    @patch('slipspeed.connections.SerialConnection')
     def test_create_serial_connection(self, mock_serial_class):
         """Create serial connection from string."""
         mock_serial_class.return_value = MagicMock()
@@ -786,7 +786,7 @@ class TestCreateConnection:
         
         mock_serial_class.assert_called_once()
     
-    @patch('slipstream.connections.SerialConnection')
+    @patch('slipspeed.connections.SerialConnection')
     def test_create_serial_default_baudrate(self, mock_serial_class):
         """Serial connection defaults to 115200 baud."""
         mock_serial_class.return_value = MagicMock()
@@ -797,7 +797,7 @@ class TestCreateConnection:
         call_kwargs = mock_serial_class.call_args[1]
         assert call_kwargs['baudrate'] == 115200
     
-    @patch('slipstream.connections.TCPConnection')
+    @patch('slipspeed.connections.TCPConnection')
     def test_create_tcp_connection(self, mock_tcp_class):
         """Create TCP connection from string."""
         mock_tcp_class.return_value = MagicMock()
@@ -806,7 +806,7 @@ class TestCreateConnection:
         
         mock_tcp_class.assert_called_once()
     
-    @patch('slipstream.connections.TCPServerConnection')
+    @patch('slipspeed.connections.TCPServerConnection')
     def test_create_tcp_server_connection(self, mock_tcp_server_class):
         """Create TCP server connection from string."""
         mock_tcp_server_class.return_value = MagicMock()
@@ -814,7 +814,7 @@ class TestCreateConnection:
         conn = create_connection('tcp-listen:0.0.0.0:5000')
         mock_tcp_server_class.assert_called_once_with('0.0.0.0', 5000, timeout=0.1)
     
-    @patch('slipstream.connections.TCPServerConnection')
+    @patch('slipspeed.connections.TCPServerConnection')
     def test_create_tcp_server_connection_simple(self, mock_tcp_server_class):
         """Create TCP server connection with just port."""
         mock_tcp_server_class.return_value = MagicMock()
@@ -822,7 +822,7 @@ class TestCreateConnection:
         conn = create_connection('tcp-listen:5000')
         mock_tcp_server_class.assert_called_once_with('0.0.0.0', 5000, timeout=0.1)
     
-    @patch('slipstream.connections.UDPConnection')
+    @patch('slipspeed.connections.UDPConnection')
     def test_create_udp_connection(self, mock_udp_class):
         """Create UDP connection from string."""
         mock_udp_class.return_value = MagicMock()
@@ -830,7 +830,7 @@ class TestCreateConnection:
         conn = create_connection('udp:192.168.1.1:5000')
         mock_udp_class.assert_called_once_with('192.168.1.1', 5000, timeout=0.1)
     
-    @patch('slipstream.connections.UDPConnection')
+    @patch('slipspeed.connections.UDPConnection')
     def test_create_udp_connection_with_bind_port(self, mock_udp_class):
         """Create UDP connection with local bind port."""
         mock_udp_class.return_value = MagicMock()
@@ -838,7 +838,7 @@ class TestCreateConnection:
         conn = create_connection('udp:192.168.1.1:5000:8000')
         mock_udp_class.assert_called_once_with('192.168.1.1', 5000, timeout=0.1, bind_port=8000)
     
-    @patch('slipstream.connections.UDPServerConnection')
+    @patch('slipspeed.connections.UDPServerConnection')
     def test_create_udp_server_connection(self, mock_udp_server_class):
         """Create UDP server connection from string."""
         mock_udp_server_class.return_value = MagicMock()
@@ -846,7 +846,7 @@ class TestCreateConnection:
         conn = create_connection('udp-listen:0.0.0.0:5000')
         mock_udp_server_class.assert_called_once_with('0.0.0.0', 5000, timeout=0.1)
     
-    @patch('slipstream.connections.UDPServerConnection')
+    @patch('slipspeed.connections.UDPServerConnection')
     def test_create_udp_server_connection_simple(self, mock_udp_server_class):
         """Create UDP server connection with just port."""
         mock_udp_server_class.return_value = MagicMock()
@@ -854,7 +854,7 @@ class TestCreateConnection:
         conn = create_connection('udp-listen:5000')
         mock_udp_server_class.assert_called_once_with('0.0.0.0', 5000, timeout=0.1)
     
-    @patch('slipstream.connections.FileConnection')
+    @patch('slipspeed.connections.FileConnection')
     def test_create_file_connection(self, mock_file_class):
         """Create file connection from string."""
         mock_file_class.return_value = MagicMock()
@@ -862,7 +862,7 @@ class TestCreateConnection:
         conn = create_connection('file:/tmp/test.bin')
         mock_file_class.assert_called_once_with('/tmp/test.bin', timeout=0.1)
     
-    @patch('slipstream.connections.FileConnection')
+    @patch('slipspeed.connections.FileConnection')
     def test_create_file_connection_with_mode(self, mock_file_class):
         """Create file connection with mode."""
         mock_file_class.return_value = MagicMock()
@@ -1172,7 +1172,7 @@ class TestStreamingDecoderAdvanced:
 class TestConnectionsAdvanced:
     """Advanced connection tests."""
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_connection_closed(self, mock_socket_module):
         """Test read from closed TCP connection."""
         mock_socket = MagicMock()
@@ -1187,7 +1187,7 @@ class TestConnectionsAdvanced:
         data = conn.read()
         assert data == b''
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_write_error(self, mock_socket_module):
         """Test write error handling."""
         mock_socket = MagicMock()
@@ -1317,7 +1317,7 @@ class TestFileConnection:
 class TestUDPConnection:
     """Test UDPConnection class."""
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_open(self, mock_socket_module):
         """Open UDP connection."""
         mock_socket = MagicMock()
@@ -1328,7 +1328,7 @@ class TestUDPConnection:
         assert conn.is_open() is True
         mock_socket.bind.assert_not_called()  # No bind port specified
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_with_bind_port(self, mock_socket_module):
         """Open UDP connection with local bind port."""
         mock_socket = MagicMock()
@@ -1339,7 +1339,7 @@ class TestUDPConnection:
         assert conn.is_open() is True
         mock_socket.bind.assert_called_once_with(('0.0.0.0', 8000))
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_read(self, mock_socket_module):
         """Read from UDP connection."""
         mock_socket = MagicMock()
@@ -1351,7 +1351,7 @@ class TestUDPConnection:
         
         assert data == b"udp_data"
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_write(self, mock_socket_module):
         """Write to UDP connection."""
         mock_socket = MagicMock()
@@ -1364,7 +1364,7 @@ class TestUDPConnection:
         assert written == 4
         mock_socket.sendto.assert_called_once()
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_timeout(self, mock_socket_module):
         """Handle UDP timeout gracefully."""
         import socket as socket_module
@@ -1378,7 +1378,7 @@ class TestUDPConnection:
         
         assert data == b''
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_connection_close(self, mock_socket_module):
         """Close UDP connection."""
         mock_socket = MagicMock()
@@ -1394,7 +1394,7 @@ class TestUDPConnection:
 class TestUDPServerConnection:
     """Test UDPServerConnection class."""
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_server_open(self, mock_socket_module):
         """Open UDP server."""
         mock_socket = MagicMock()
@@ -1405,7 +1405,7 @@ class TestUDPServerConnection:
         assert conn.is_open() is True
         mock_socket.bind.assert_called_once_with(('0.0.0.0', 5000))
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_server_read(self, mock_socket_module):
         """Read from UDP server."""
         mock_socket = MagicMock()
@@ -1417,7 +1417,7 @@ class TestUDPServerConnection:
         
         assert data == b"server_data"
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_server_write_returns_zero(self, mock_socket_module):
         """UDP server write returns 0 (no default peer)."""
         mock_socket = MagicMock()
@@ -1428,7 +1428,7 @@ class TestUDPServerConnection:
         
         assert written == 0
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_server_sendto(self, mock_socket_module):
         """UDP server sendto to specific address."""
         mock_socket = MagicMock()
@@ -1441,7 +1441,7 @@ class TestUDPServerConnection:
         assert written == 4
         mock_socket.sendto.assert_called_once()
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_udp_server_close(self, mock_socket_module):
         """Close UDP server."""
         mock_socket = MagicMock()
@@ -1457,7 +1457,7 @@ class TestUDPServerConnection:
 class TestTCPServerConnection:
     """Test TCPServerConnection class."""
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_server_open(self, mock_socket_module):
         """Open TCP server."""
         mock_server_socket = MagicMock()
@@ -1469,7 +1469,7 @@ class TestTCPServerConnection:
         mock_server_socket.bind.assert_called_once_with(('0.0.0.0', 5000))
         mock_server_socket.listen.assert_called_once_with(1)
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_server_accept_client(self, mock_socket_module):
         """TCP server accepts client."""
         mock_server_socket = MagicMock()
@@ -1485,7 +1485,7 @@ class TestTCPServerConnection:
         assert data == b"client_data"
         mock_server_socket.accept.assert_called_once()
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_server_write(self, mock_socket_module):
         """TCP server writes to client."""
         mock_server_socket = MagicMock()
@@ -1503,7 +1503,7 @@ class TestTCPServerConnection:
         assert written == 4
         mock_client_socket.send.assert_called_once()
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_server_no_client_write_zero(self, mock_socket_module):
         """TCP server write returns 0 when no client."""
         mock_server_socket = MagicMock()
@@ -1515,7 +1515,7 @@ class TestTCPServerConnection:
         
         assert written == 0
     
-    @patch('slipstream.connections.socket')
+    @patch('slipspeed.connections.socket')
     def test_tcp_server_close(self, mock_socket_module):
         """Close TCP server."""
         mock_server_socket = MagicMock()
@@ -1965,4 +1965,4 @@ class TestTestDataFiles:
 
 
 if __name__ == '__main__':
-    pytest.main([__file__, '-v', '--cov=slipstream', '--cov-report=term-missing'])
+    pytest.main([__file__, '-v', '--cov=slipspeed', '--cov-report=term-missing'])

@@ -148,7 +148,7 @@ sudo usermod -a -G dialout $USER
 # Log out and log back in
 ```
 
-### "Module not found: slipstream"
+### "Module not found: slipspeed"
 ```bash
 pip install -e .  # Install from python/ directory
 ```

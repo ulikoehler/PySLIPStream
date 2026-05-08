@@ -1,6 +1,6 @@
 # slipspeed - Python SLIP Library
 
-![slipspeed logo](docs/SLIPstream-logo.png)
+![slipspeed logo](docs/SLIPspeed-logo.png)
 
 pip install slipspeed
 
@@ -10,15 +10,15 @@ A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame en
 
 ## Features
 
-- ✅ **SLIP Encoding/Decoding** - Full RFC 1055 compliance
-- ✅ **Streaming Decoder** - Process continuous byte streams from serial or network
-- ✅ **CRC32 Validation** - Ethernet polynomial with built-in verification
-- ✅ **Multiple I/O Backends** - Serial, TCP (client/server), UDP (client/server), File
-- ✅ **Statistics Tracking** - Comprehensive frame and throughput metrics
-- ✅ **Interactive ncurses UI** - Real-time dashboard for monitoring
-- ✅ **Hex Utilities** - Display and analyze frame bytes
-- ✅ **Async API (Optional)** - asyncio-based async/await support for concurrent operations
-- ✅ **Production Ready** - Thoroughly documented and tested
+- **SLIP Encoding/Decoding** - Full RFC 1055 compliance
+- **Streaming Decoder** - Process continuous byte streams from serial or network
+- **CRC32 Validation** - Ethernet polynomial with built-in verification
+- **Multiple I/O Backends** - Serial, TCP (client/server), UDP (client/server), File
+- **Statistics Tracking** - Comprehensive frame and throughput metrics
+- **Interactive ncurses UI** - Real-time dashboard for monitoring
+- **Hex Utilities** - Display and analyze frame bytes
+- **Async API (Optional)** - asyncio-based async/await support for concurrent operations
+- **Production Ready** - Thoroughly documented and tested
 
 ## Installation
 
@@ -98,7 +98,7 @@ monitor = FrameMonitor(conn, check_crc=True)
 # Print each received frame
 def on_frame(data):
     last = monitor.get_last_frame()
-    crc_status = "✓" if last['crc_valid'] else "✗"
+    crc_status = "" if last['crc_valid'] else ""
     print(f"[{crc_status}] {data.hex()}")
 
 monitor.frame_callback = on_frame
@@ -618,11 +618,6 @@ Output:
 ```json
 {"frame_number": 1, "timestamp": "2024-05-08T20:30:45.123456Z", "crc_valid": true, "payload_length": 12, "hex": "48656C6C6F20576F726C64"}
 {"frame_number": 2, "timestamp": "2024-05-08T20:30:45.234567Z", "crc_valid": true, "payload_length": 8, "hex": "7465737464617461"}
-```
-
-For frames with bad CRC:
-```json
-{"frame_number": 3, "timestamp": "2024-05-08T20:30:45.345678Z", "crc_valid": false, "payload_length": 8, "hex": "626164637263", "crc_received": 12345678, "crc_expected": 87654321}
 ```
 
 **CSV Format**

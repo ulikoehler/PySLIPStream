@@ -93,7 +93,7 @@ def monitor_mode(port, duration=None, interactive=False):
     """
     Monitor mode: Receive and analyze SLIP frames from a serial port.
     
-    This demonstrates the main use case of slipstream library.
+    This demonstrates the main use case of slipspeed library.
     """
     print(f"Monitor Mode: Receiving SLIP frames from {port}")
     if duration:

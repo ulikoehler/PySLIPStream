@@ -40,8 +40,8 @@ jobs:
     - name: Run Python tests with coverage
       run: |
         cd python
-        pytest tests/test_slipstream.py \
-          --cov=slipstream \
+        pytest tests/test_slipspeed.py \
+          --cov=slipspeed \
           --cov-report=term-missing \
           --cov-report=xml \
           --cov-report=html \
@@ -85,7 +85,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pyserial
     
-    - name: Install PySLIPStream
+    - name: Install PySLIPSpeed
       run: |
         cd python
         pip install -e .
@@ -127,7 +127,7 @@ jobs:
       run: |
         cat > /tmp/parity_test.py << 'EOF'
         import sys
-        sys.path.insert(0, '/home/runner/work/PySLIPStream/PySLIPStream/python')
+        sys.path.insert(0, '/home/runner/work/PySLIPSpeed/PySLIPSpeed/python')
         
         from slipspeed import encode_packet, decode_packet, calculate_crc32
         
@@ -195,17 +195,17 @@ jobs:
     - name: Check Python code style (Black)
       run: |
         cd python
-        black --check slipstream/ scripts/ examples/ || true
+        black --check slipspeed/ scripts/ examples/ || true
     
     - name: Check Python imports (isort)
       run: |
         cd python
-        isort --check-only slipstream/ scripts/ examples/ || true
+        isort --check-only slipspeed/ scripts/ examples/ || true
     
     - name: Lint Python code (flake8)
       run: |
         cd python
-        flake8 slipstream/ --max-line-length=100 || true
+        flake8 slipspeed/ --max-line-length=100 || true
 
   documentation:
     name: Build Documentation

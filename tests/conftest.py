@@ -1,4 +1,4 @@
-"""pytest configuration for slipstream tests."""
+"""pytest configuration for slipspeed tests."""
 import sys
 from pathlib import Path
 

@@ -4,7 +4,7 @@ Tests for async SLIP encoding and decoding.
 
 import pytest
 import asyncio
-from pyslipstream.async_slip import (
+from slipspeed.async_slip import (
     encode_packet_async,
     decode_packet_async,
     AsyncStreamingDecoder,

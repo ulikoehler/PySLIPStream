@@ -14,31 +14,31 @@ Features:
 
 Usage:
     # Monitor serial port
-    slipstream /dev/ttyUSB0
+    slipspeed /dev/ttyUSB0
     
     # Monitor with custom baudrate
-    slipstream /dev/ttyUSB0:115200
+    slipspeed /dev/ttyUSB0:115200
     
     # Monitor TCP connection (client)
-    slipstream tcp:192.168.1.1:5000
+    slipspeed tcp:192.168.1.1:5000
     
     # Listen on TCP port (server)
-    slipstream tcp-listen:5000
+    slipspeed tcp-listen:5000
     
     # Monitor UDP connection (client)
-    slipstream udp:192.168.1.1:5000
+    slipspeed udp:192.168.1.1:5000
     
     # Listen on UDP port (server)
-    slipstream udp-listen:5000
+    slipspeed udp-listen:5000
     
     # Monitor file
-    slipstream file:/path/to/file.bin
+    slipspeed file:/path/to/file.bin
     
     # Interactive ncurses mode
-    slipstream -i /dev/ttyUSB0
+    slipspeed -i /dev/ttyUSB0
     
     # Monitor for 30 seconds
-    slipstream -t 30 /dev/ttyUSB0
+    slipspeed -t 30 /dev/ttyUSB0
 
 Author: Uli Köhler
 License: See LICENSE file in libSLIPspeed repository
@@ -55,7 +55,7 @@ import csv
 from pathlib import Path
 from datetime import datetime
 
-# Add parent directory to path for slipstream import
+# Add parent directory to path for slipspeed import
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import slipspeed
@@ -678,47 +678,47 @@ Connection Types:
 
 Examples:
   # Monitor serial port (auto-detected as character device)
-  slipstream /dev/ttyUSB0
+  slipspeed /dev/ttyUSB0
   
   # Monitor with custom baudrate
-  slipstream /dev/ttyUSB0:115200
+  slipspeed /dev/ttyUSB0:115200
   
   # Monitor serial port with explicit URL scheme
-  slipstream serial:///dev/ttyUSB0
+  slipspeed serial:///dev/ttyUSB0
   
   # Monitor TCP connection (client)
-  slipstream tcp:192.168.1.1:5000
-  slipstream tcp://192.168.1.1:5000
+  slipspeed tcp:192.168.1.1:5000
+  slipspeed tcp://192.168.1.1:5000
   
   # Listen on TCP port (server)
-  slipstream tcp-listen:5000
+  slipspeed tcp-listen:5000
   
   # Monitor UDP connection (client)
-  slipstream udp:192.168.1.1:5000
+  slipspeed udp:192.168.1.1:5000
   
   # Listen on UDP port (server)
-  slipstream udp-listen:5000
+  slipspeed udp-listen:5000
   
   # Monitor file (auto-detected as regular file)
-  slipstream /path/to/file.bin
+  slipspeed /path/to/file.bin
   
   # Monitor file with explicit URL scheme
-  slipstream file:/path/to/file.bin
-  slipstream file:///path/to/file.bin
+  slipspeed file:/path/to/file.bin
+  slipspeed file:///path/to/file.bin
 ''' + ('''
   # Interactive ncurses UI mode (with message sending)
-  slipstream -i /dev/ttyUSB0
+  slipspeed -i /dev/ttyUSB0
 ''' if ncurses_available else '''
   # Interactive ncurses UI mode (not available - curses module not found)
 ''') + '''
   # Monitor for 30 seconds
-  slipstream -t 30 /dev/ttyUSB0
+  slipspeed -t 30 /dev/ttyUSB0
   
   # Show hex dump of each frame
-  slipstream -x /dev/ttyUSB0
+  slipspeed -x /dev/ttyUSB0
   
   # Follow file for appended data (like tail -f)
-  slipstream -f /path/to/file.bin
+  slipspeed -f /path/to/file.bin
         '''
     )
     
