@@ -41,7 +41,7 @@ Usage:
     slipstream -t 30 /dev/ttyUSB0
 
 Author: Uli Köhler
-License: See LICENSE file in libSLIPStream repository
+License: See LICENSE file in libSLIPspeed repository
 """
 
 import argparse

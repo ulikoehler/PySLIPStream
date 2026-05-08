@@ -6,7 +6,7 @@ pip install slipspeed
 
 A comprehensive Python library for SLIP (Serial Line Internet Protocol) frame encoding, decoding, and monitoring with CRC32 validation and real-time statistics.
 
-**Note:** This library is fully compatible with [libSLIPStream](https://github.com/ulikoehler/libSLIPStream) (C++) and [SLIPSpeed](https://github.com/ulikoehler/SLIPSpeed) (Rust) implementations.
+**Note:** This library is fully compatible with [libSLIPspeed](https://github.com/ulikoehler/libSLIPspeed) (C++) and [SLIPSpeed](https://github.com/ulikoehler/SLIPSpeed) (Rust) implementations.
 
 ## Features
 
@@ -1134,7 +1134,7 @@ For detailed information about SLIP frame structure, including escape sequences 
 
 ## License
 
-Part of libSLIPStream. See LICENSE in the parent repository.
+Part of libSLIPspeed. See LICENSE in the parent repository.
 
 ## Contributing
 
@@ -1150,7 +1150,7 @@ Uli Köhler <github@techoverflow.net>
 
 ## See Also
 
-- [libSLIPStream C++ Library](../README.md)
+- [libSLIPspeed C++ Library](../README.md)
 - [SLIP Frame Format Reference](../FramingConvention.md)
 - [RFC 1055 - SLIP Protocol](https://tools.ietf.org/html/rfc1055)
 - [pyserial Documentation](https://pyserial.readthedocs.io/)
